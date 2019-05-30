@@ -26,18 +26,16 @@ public class courseSchedulingGUI extends Application {
     ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
     Stage window;
     Button saveButton;
+    Button cancelButton;
     
     public static void main(String[] args) {
         launch(args);
     }
     public void start(Stage primaryStage) {
         window = primaryStage;
-        execute(); 
-        window.setTitle("Course Scheduler");
-        saveButton.setOnAction(e -> {
-            retrieveCheckBoxes();
-        });
-        window.show();
+        execute();
+        
+        
     }
     
     public void execute() {
@@ -47,6 +45,9 @@ public class courseSchedulingGUI extends Application {
     }
     
     public void createQualifications() {
+      //clears if used multiple times in a session
+      qualificationsArr.clear();
+      restrictionsArr.clear();
         BorderPane bp = new BorderPane();
         VBox box1 = new VBox(10);
         VBox box2 = new VBox(10);
@@ -56,28 +57,24 @@ public class courseSchedulingGUI extends Application {
         Label nameLabel = new Label("Enter full name of instructor:");
         TextField teacherNameInput = new TextField();
         saveButton = new Button("Finish");
+        cancelButton = new Button("Cancel");
         
         teacherNameInput.setPromptText("Firstname, Lastname");
         titleLabel.setPadding(new Insets(10, 10, 10, 10));
         nameLabel.setPadding(new Insets(50, 0, 0, 0));
         
         
-        CheckBox morningBox = new CheckBox("No Mornings");
-        restrictionsArr.add(morningBox);
-        CheckBox noonBox = new CheckBox("No Afternoons");
-        restrictionsArr.add(noonBox);
-        CheckBox noMon = new CheckBox("No Mondays");
-        restrictionsArr.add(noMon);
-        CheckBox noTues = new CheckBox("No Tuesdays");
-        restrictionsArr.add(noTues);
-        CheckBox noWed = new CheckBox("No Wednesdays");
-        restrictionsArr.add(noWed);
-        CheckBox noThurs = new CheckBox("No Thursdays");
-        restrictionsArr.add(noThurs);
-        CheckBox noFri = new CheckBox("No Fridays");
-        restrictionsArr.add(noFri);
+        CheckBox p1Box = new CheckBox("No Period 1");
+        restrictionsArr.add(p1Box);
+        CheckBox p2Box = new CheckBox("No Period 2");
+        restrictionsArr.add(p2Box);
+        CheckBox p4Box = new CheckBox("No Period 4");
+        restrictionsArr.add(p4Box);
+        CheckBox p5Box = new CheckBox("No Period 5");
+        restrictionsArr.add(p5Box);
         
-        box2.getChildren().addAll(restrictionsLabel, morningBox, noonBox, noMon, noTues, noWed, noThurs, noFri, nameLabel, teacherNameInput, saveButton);
+        
+        box2.getChildren().addAll(restrictionsLabel, p1Box, p2Box, p4Box, p5Box, nameLabel, teacherNameInput, saveButton, cancelButton);
         box2.setMinWidth(200);
         
         box1.setPadding(new Insets(20, 20, 20, 20));
@@ -98,9 +95,18 @@ public class courseSchedulingGUI extends Application {
         bp.setTop(titleLabel);
         bp.setPadding(new Insets(10, 10, 10, 10));
         
-        Scene qualScene = new Scene(bp, 500, 500);
-        window.setScene(qualScene);
+         
+        window.setTitle("Course Scheduler");
+        saveButton.setOnAction(e -> {
+          retrieveCheckBoxes();
+        });
+        cancelButton.setOnAction(e -> {
+          cancelQual();
+        });
         
+        Scene qualScene = new Scene(bp, 500, 450);
+        window.setScene(qualScene);
+        window.show();
     }
     public void retrieveCheckBoxes() {
         for (int i = 0; i < 100; i++) {
@@ -112,9 +118,12 @@ public class courseSchedulingGUI extends Application {
             if (restrictionsArr.get(i).isSelected()) {
                 System.out.println(restrictionsArr.get(i).getText());
             }
-        }
-        
-        
+        } 
+    }
+    
+    public void cancelQual() {
+      window.close();
+      execute();
     }
     
     
