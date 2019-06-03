@@ -1,0 +1,199 @@
+//Imports 
+import java.lang.String;
+import java.util.*;
+import java.awt.Desktop;
+import java.io.File;
+import java.io.IOException;
+import javafx.application.*;
+import javafx.event.*;
+import javafx.scene.*;
+import javafx.scene.layout.*;
+import javafx.scene.control.*;
+import javafx.collections.*;
+import javafx.stage.*;
+import javafx.geometry.*;
+import javafx.scene.control.cell.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.stage.FileChooser;
+import java.nio.file.*;
+import java.io.*;
+import javafx.scene.shape.Rectangle;
+import javafx.collections.*;
+
+
+public class courseSchedulingGUI extends Application {
+  //Public Variable Declarations
+  static ArrayList<String> teacher_Name = new ArrayList<String>(); //Arraylist to temporarily store teacher names
+  static ArrayList<String> teacher_Quals = new ArrayList<String>(); //Arraylist to temporarily store teacher quals
+  static String currentDirPath = System.getProperty("user.dir"); //Finds the path of the working directory
+  static ArrayList<String[]> schedule_Arr = new ArrayList<String[]>(); //Array that stores the items in the csv
+  
+  static ArrayList<String[]> Period1_Ccodes = new ArrayList<String[]>(); //Array that stores period 1 course codes
+  static ArrayList<String[]> Period2_Ccodes = new ArrayList<String[]>(); //Array that stores period 2 course codes
+  static ArrayList<String[]> Period4_Ccodes = new ArrayList<String[]>(); //Array that stores period 4 course codes
+  static ArrayList<String[]> Period5_Ccodes = new ArrayList<String[]>(); //Array that stores period 5 course codes
+  
+  static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
+  
+  //Method to read the content of a csv
+  public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
+    File course_Scheduling = new File(currentDirPath + "\\Timetabling template.csv"); //Finds csv
+    String line = " "; //Initializes line variable
+    BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
+    try {
+      line = filereader.readLine(); //Reads first line and discards it
+      while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
+        String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
+        schedule_arr.add(temprowarray); //Adds array into an arraylist
+      }
+    }
+    catch (IOException e){ //If a file wasn't found
+      System.out.println("A file was not found.");
+    }
+    finally{
+      filereader.close(); //Closes filereader
+    }
+  }
+  
+  //Method that reads through the schedule_Arr arraylist and stores the courses for period 1 into an arraylist
+  public static void period1_Courses(ArrayList<String[]> schedule_arr, ArrayList<String> course_codes_P1){
+    for (int i = 1; i < schedule_arr.get(1).length; i++){
+      course_codes_P1.add(schedule_arr.get(1)[i]); //Adds course code into arraylist
+    }
+  }
+  //Method that reads through the schedule_Arr arraylist and stores the courses for period 2 into an arraylist
+  public static void period2_Courses(ArrayList<String[]> schedule_arr, ArrayList<String> course_codes_P2){
+    for (int i = 1; i < schedule_arr.get(6).length; i++){
+      course_codes_P2.add(schedule_arr.get(6)[i]); //Adds course code into arraylist
+    }
+  }
+  //Method that reads through the schedule_Arr arraylist and stores the courses for period 4 into an arraylist
+  public static void period3_Courses(ArrayList<String[]> schedule_arr, ArrayList<String> course_codes_P4){
+    for (int i = 1; i < schedule_arr.get(12).length; i++){
+      course_codes_P4.add(schedule_arr.get(12)[i]); //Adds course code into arraylist
+    }
+  }
+  //Method that reads through the schedule_Arr arraylist and stores the courses for period 5 into an arraylist
+  public static void period4_Courses(ArrayList<String[]> schedule_arr, ArrayList<String> course_codes_P5){
+    for (int i = 1; i < schedule_arr.get(17).length; i++){
+      course_codes_P5.add(schedule_arr.get(17)[i]); //Adds course code into arraylist
+    }
+  }
+
+  ObservableList <CheckBox> qualificationsArr = FXCollections.observableArrayList();
+  ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
+  Stage window;
+  Button saveButton;
+  Button cancelButton;
+  
+  public static void main(String[] args) {
+    launch(args);
+  }
+  public void start(Stage primaryStage) {
+    window = primaryStage;
+    execute();
+    
+    
+  }
+  
+  public void execute() {
+    if (BeginClass.startProgramWindow() == 2) {
+      createQualifications();
+    }
+  }
+  
+  public void createQualifications() {
+    //clears if used multiple times in a session
+    qualificationsArr.clear();
+    restrictionsArr.clear();
+    BorderPane bp = new BorderPane();
+    VBox box1 = new VBox(10);
+    VBox box2 = new VBox(10);
+    
+    Label restrictionsLabel = new Label("Check restrictions that apply:");
+    Label titleLabel = new Label("Check qualifications that apply:");
+    Label nameLabel = new Label("Enter full name of instructor:");
+    TextField teacherNameInput = new TextField();
+    saveButton = new Button("Finish");
+    cancelButton = new Button("Cancel");
+    
+    teacherNameInput.setPromptText("Firstname, Lastname");
+    titleLabel.setPadding(new Insets(10, 10, 10, 10));
+    nameLabel.setPadding(new Insets(50, 0, 0, 0));
+    
+    
+    CheckBox p1Box = new CheckBox("No Period 1");
+    restrictionsArr.add(p1Box);
+    CheckBox p2Box = new CheckBox("No Period 2");
+    restrictionsArr.add(p2Box);
+    CheckBox p4Box = new CheckBox("No Period 4");
+    restrictionsArr.add(p4Box);
+    CheckBox p5Box = new CheckBox("No Period 5");
+    restrictionsArr.add(p5Box);
+    
+    
+    box2.getChildren().addAll(restrictionsLabel, p1Box, p2Box, p4Box, p5Box, nameLabel, teacherNameInput, saveButton, cancelButton);
+    box2.setMinWidth(200);
+    
+    box1.setPadding(new Insets(20, 20, 20, 20));
+    box2.setPadding(new Insets(0, 20, 20, 20));
+    
+    ScrollPane scroller = new ScrollPane();
+    scroller.setPrefSize(60, 120);
+    
+    for (int i = 0; i < 100; i++) {
+      qualificationsArr.add(new CheckBox("Course Code"));
+      box1.getChildren().addAll(qualificationsArr.get(i));
+      
+    }
+    
+    scroller.setContent(box1);
+    bp.setCenter(scroller);
+    bp.setRight(box2);
+    bp.setTop(titleLabel);
+    bp.setPadding(new Insets(10, 10, 10, 10));
+    
+    
+    window.setTitle("Course Scheduler");
+    saveButton.setOnAction(e -> {
+      retrieveCheckBoxes();
+    });
+    cancelButton.setOnAction(e -> {
+      cancelQual();
+    });
+    
+    Scene qualScene = new Scene(bp, 500, 450);
+    window.setScene(qualScene);
+    window.show();
+  }
+  public void retrieveCheckBoxes() {
+    //System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
+    //teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
+    for (int i = 0; i < 100; i++) {
+      if (qualificationsArr.get(i).isSelected()) {
+        System.out.println(qualificationsArr.get(i).getText());
+        //teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
+        
+      }
+    }
+    //Creates an array that stores the values of the arraylist for teacher qualifications
+    String[] teacher_Qualifications = new String[teacher_Quals.size()];
+    for (int i = 0; i < teacher_Quals.size(); i++){
+      teacher_Qualifications[i] = teacher_Quals.get(i);
+    }
+    teacher_Quals.clear(); //Clears values in arraylist for next session
+    //Creates an entry into the hashmap with teacher name as the key and the teacher quals array as the value
+    teacher_names_and_quals.put(teacherNameInput.getText(), teacher_Qualifications);
+    for (int i = 0; i < restrictionsArr.size(); i++) {
+      if (restrictionsArr.get(i).isSelected()) {
+        System.out.println(restrictionsArr.get(i).getText());
+      }
+    } 
+  }
+  
+  public void cancelQual() {
+    window.close();
+    execute();
+  }
+}
