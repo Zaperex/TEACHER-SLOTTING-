@@ -36,6 +36,9 @@ public class courseSchedulingGUI extends Application {
   
   static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
   
+  //Global GUI Variables
+  TextField teacherNameInput;
+  
   //Method to read the content of a csv
   public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
     File course_Scheduling = new File(currentDirPath + "\\Timetabling template.csv"); //Finds csv
@@ -80,6 +83,29 @@ public class courseSchedulingGUI extends Application {
       course_codes_P5.add(schedule_arr.get(17)[i]); //Adds course code into arraylist
     }
   }
+  
+  //Method that stores teacher quals into a file
+  public static void file_Save(ArrayList<String[]> teacher_qual, ArrayList<String> teacher_names, String path) throws IOException{
+    File teacher_qualifications = new File(path + "\\Teacher Qualifications");
+    //Writer set to true so that each write would add content without overwriting
+    FileWriter writer = new FileWriter(teacher_qualifications, true); 
+    try{
+      //Loop that populates the csv file
+      for (int i = 0; i < teacher_names.size(); i++){
+          writer.append(teacher_names.get(i) + ","); //Writes in teacher name
+          for (int j = 0; j < teacher_qual.get(i).length; j++){
+            writer.append(teacher_qual.get(i)[j] + ","); //Writes in corresponding qualifications
+          }
+        writer.append("\n"); //Moves to next row
+      }
+    }
+    catch (IOException e){
+      System.out.println("An IOException has occurred.");
+    }
+    finally{
+      writer.close(); //Closes writer
+    }
+  }
 
   ObservableList <CheckBox> qualificationsArr = FXCollections.observableArrayList();
   ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
@@ -114,7 +140,7 @@ public class courseSchedulingGUI extends Application {
     Label restrictionsLabel = new Label("Check restrictions that apply:");
     Label titleLabel = new Label("Check qualifications that apply:");
     Label nameLabel = new Label("Enter full name of instructor:");
-    TextField teacherNameInput = new TextField();
+    teacherNameInput = new TextField();
     saveButton = new Button("Finish");
     cancelButton = new Button("Cancel");
     
@@ -168,12 +194,12 @@ public class courseSchedulingGUI extends Application {
     window.show();
   }
   public void retrieveCheckBoxes() {
-    //System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
-    //teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
+    System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
+    teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
     for (int i = 0; i < 100; i++) {
       if (qualificationsArr.get(i).isSelected()) {
         System.out.println(qualificationsArr.get(i).getText());
-        //teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
+        teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
         
       }
     }
