@@ -198,7 +198,7 @@ public class courseSchedulingGUI extends Application {
     
     //GUI METHODS 
     //_____________________________________________________________________________________________________________-
-    public void start(Stage primaryStage) {
+    public void start(Stage primaryStage) throws Exception{
         window = primaryStage;
         window.setTitle("Course Scheduling");
         execute();
@@ -206,7 +206,7 @@ public class courseSchedulingGUI extends Application {
         
     }
     
-    public void execute() {
+    public void execute() throws IOException{
         
         int response = BeginClass.startProgramWindow();
         if (response == 2) {
@@ -220,7 +220,7 @@ public class courseSchedulingGUI extends Application {
         }
     }
     
-    public void createQualifications() {
+    public void createQualifications() throws IOException{
         //clears if used multiple times in a session
         qualificationsArr.clear();
         restrictionsArr.clear();
@@ -274,17 +274,27 @@ public class courseSchedulingGUI extends Application {
         
         window.setTitle("Course Scheduler");
         saveButton.setOnAction(e -> {
-            retrieveCheckBoxes();
+            try {
+                retrieveCheckBoxes();
+            }
+            catch(IOException e2) {
+                System.out.println("Retreiving checkBox error");
+            }
         });
         cancelButton.setOnAction(e -> {
-            cancelQual();
+            try {
+                cancelQual();
+            }
+            catch (IOException e3) {
+                System.out.println("Cancel teacher error");
+            }
         });
         
         Scene qualScene = new Scene(bp, 500, 450);
         window.setScene(qualScene);
         window.show();
     }
-    public void retrieveCheckBoxes() {
+    public void retrieveCheckBoxes() throws IOException{
         System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
         teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
         for (int i = 0; i < 100; i++) {
@@ -316,7 +326,7 @@ public class courseSchedulingGUI extends Application {
     
     
     
-    public void cancelQual() {
+    public void cancelQual() throws IOException{
         window.close();
         execute();
     }
@@ -364,7 +374,12 @@ public class courseSchedulingGUI extends Application {
         tableBackButton.setOnAction(e -> {
             table.getItems().clear();
             window.close();
-            execute();
+            try {
+                execute();
+            }
+            catch (IOException e2) {
+                System.out.println("Babk button error");
+            }
         });
         
         
