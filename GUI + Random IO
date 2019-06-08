@@ -30,7 +30,7 @@ public class courseSchedulingGUI extends Application {
     static ArrayList<String[]> schedule_Arr = new ArrayList<String[]>(); //ArrayList that stores the items in the csv
     static ArrayList<String> course_Codes = new ArrayList<String>(); //Arraylist to store and create a list of all the course codes  
     static ArrayList<String[]> period_Course_codes = new ArrayList<String[]>(); //ArrayList that course codes for each period
-    
+    static ArrayList<String[]> all_teacher_Qualifications = new ArrayList<String[]>(); //Stores all the teacher qualifications for each teacher for file saving
     static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
     
     //Global GUI Variables
@@ -302,12 +302,14 @@ public class courseSchedulingGUI extends Application {
         teacher_Quals.clear(); //Clears values in arraylist for next session
         //Creates an entry into the hashmap with teacher name as the key and the teacher quals array as the value
         teacher_names_and_quals.put(teacherNameInput.getText(), teacher_Qualifications);
+        //Adds teacher_quals into the main qualifications arraylist
+        all_teacher_Qualifications.add(teacher_Qualifications);
         for (int i = 0; i < restrictionsArr.size(); i++) {
             if (restrictionsArr.get(i).isSelected()) {
                 System.out.println(restrictionsArr.get(i).getText());
             }
         }
-        file_Save(teacher_Quals, teacher_Name, currentDirPath);
+        file_Save(all_teacher_Qualifications, teacher_Name, currentDirPath);
         window.close();
         execute();
     }
