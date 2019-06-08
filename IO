@@ -15,7 +15,7 @@ class teacher_Slotting_IO{
   
   static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
   
-  //Method to read and store the content of a csv into an arraylist/
+  //Method to read and store the content of a csv into an arraylist
   public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
     File course_Scheduling = new File(currentDirPath + "\\WH.csv"); //Finds csv
     String line = " "; //Initializes line variable
