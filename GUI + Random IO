@@ -84,7 +84,7 @@ public class courseSchedulingGUI extends Application {
     public static void file_Save(ArrayList<String[]> teacher_qual, ArrayList<String> teacher_names, String path) throws IOException{
         File teacher_qualifications = new File(path + "\\Teacher Qualifications");
         //Writer set to true so that each write would add content without overwriting
-        FileWriter writer = new FileWriter(teacher_qualifications, true); 
+        FileWriter writer = new FileWriter(teacher_qualifications, false); 
         try{
             //Loop that populates the csv file
             for (int i = 0; i < teacher_names.size(); i++){
@@ -222,8 +222,13 @@ public class courseSchedulingGUI extends Application {
     
     public void createQualifications() throws IOException{
         //clears if used multiple times in a session
+        
+        teacher_Quals.clear();
+        teacher_names_and_quals.clear();
+       
         qualificationsArr.clear();
         restrictionsArr.clear();
+        
         BorderPane bp = new BorderPane();
         VBox box1 = new VBox(10);
         VBox box2 = new VBox(10);
@@ -295,9 +300,11 @@ public class courseSchedulingGUI extends Application {
         window.show();
     }
     public void retrieveCheckBoxes() throws IOException{
+        
+        
         System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
         teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < qualificationsArr.size(); i++) {
             if (qualificationsArr.get(i).isSelected()) {
                 System.out.println(qualificationsArr.get(i).getText());
                 teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
