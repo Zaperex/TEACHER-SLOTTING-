@@ -23,404 +23,398 @@ import javafx.collections.*;
 
 
 public class courseSchedulingGUI extends Application {
-    //Public Variable Declarations
-    static ArrayList<String> teacher_Name = new ArrayList<String>(); //Arraylist to temporarily store teacher names
-    static ArrayList<String> teacher_Quals = new ArrayList<String>(); //Arraylist to temporarily store teacher quals
-    static String currentDirPath = System.getProperty("user.dir"); //Finds the path of the working directory
-    static ArrayList<String[]> schedule_Arr = new ArrayList<String[]>(); //ArrayList that stores the items in the csv
-    static ArrayList<String> course_Codes = new ArrayList<String>(); //Arraylist to store and create a list of all the course codes  
-    static ArrayList<String[]> period_Course_codes = new ArrayList<String[]>(); //ArrayList that course codes for each period
-    static ArrayList<String[]> all_teacher_Qualifications = new ArrayList<String[]>(); //Stores all the teacher qualifications for each teacher for file saving
-    static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
-    
-    //Global GUI Variables
-    ObservableList <CheckBox> qualificationsArr = FXCollections.observableArrayList();
-    ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
-    ObservableList <Teacher> teacherArr = FXCollections.observableArrayList();
-    Stage window;
-    Button saveButton;
-    Button cancelButton;
-    Button tableBackButton;
-    TextField teacherNameInput;
-    TableView<Teacher> table;
-    
-    //Method to read and store the content of a csv into an arraylist/
-    public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
-        File course_Scheduling = new File(currentDirPath + "\\WH.csv"); //Finds csv
-        String line = " "; //Initializes line variable
-        BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
-        try {
-            line = filereader.readLine(); //Reads first line and discards it
-            while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
-                String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
-                schedule_arr.add(temprowarray); //Adds array into an arraylist
-            }
-        }
-        catch (IOException e){ //If a file wasn't found
-            System.out.println("A file was not found.");
-        }
-        finally{
-            filereader.close(); //Closes filereader
-        }
+  //Public Variable Declarations
+  static ArrayList<String> teacher_Name = new ArrayList<String>(); //Arraylist to temporarily store teacher names
+  static ArrayList<String> teacher_Quals = new ArrayList<String>(); //Arraylist to temporarily store teacher quals
+  static String currentDirPath = System.getProperty("user.dir"); //Finds the path of the working directory
+  static ArrayList<String[]> schedule_Arr = new ArrayList<String[]>(); //ArrayList that stores the items in the csv
+  static ArrayList<String> course_Codes = new ArrayList<String>(); //Arraylist to store and create a list of all the course codes  
+  static ArrayList<String[]> period_Course_codes = new ArrayList<String[]>(); //ArrayList that course codes for each period
+  
+  static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
+  
+  //Global GUI Variables
+  ObservableList <CheckBox> qualificationsArr = FXCollections.observableArrayList();
+  ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
+  ObservableList <Teacher> teacherArr = FXCollections.observableArrayList();
+  Stage window;
+  Button saveButton;
+  Button cancelButton;
+  Button tableBackButton;
+  TextField teacherNameInput;
+  TableView<Teacher> table;
+  
+  //Method to read and store the content of a csv into an arraylist/
+  public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
+    File course_Scheduling = new File(currentDirPath + "\\WH.csv"); //Finds csv
+    String line = " "; //Initializes line variable
+    BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
+    try {
+      line = filereader.readLine(); //Reads first line and discards it
+      while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
+        String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
+        schedule_arr.add(temprowarray); //Adds array into an arraylist
+      }
     }
-    
-    //Method that stores all the course codes into an arraylist
-    public static void course_code_Saver(ArrayList<String[]> schedule_arr, ArrayList<String> course_code_arr) throws IOException{
-        for (int i = 0; i < schedule_arr.size(); i++){
-            for (int j = 0; j < schedule_arr.get(i).length; j++){
-                if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
-                    String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
-                    course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
-                    if (!course_code_arr.contains(course_code)){ //If course code doesn't already exist in the arraylist, add it
-                        course_code_arr.add(course_code); //Adds course code into the arraylist
-                    }
-                }
-            }
-        }
+    catch (IOException e){ //If a file wasn't found
+      System.out.println("A file was not found.");
     }
-    
-    
-    //Method that stores teacher quals into a file
-    public static void file_Save(ArrayList<String[]> teacher_qual, ArrayList<String> teacher_names, String path) throws IOException{
-        File teacher_qualifications = new File(path + "\\Teacher Qualifications");
-        //Writer set to true so that each write would add content without overwriting
-        FileWriter writer = new FileWriter(teacher_qualifications, false); 
-        try{
-            //Loop that populates the csv file
-            for (int i = 0; i < teacher_names.size(); i++){
-                writer.append(teacher_names.get(i) + ","); //Writes in teacher name
-                for (int j = 0; j < teacher_qual.get(i).length; j++){
-                    writer.append(teacher_qual.get(i)[j] + ","); //Writes in corresponding qualifications
-                }
-                writer.append("\n"); //Moves to next row
-            }
-        }
-        catch (IOException e){
-            System.out.println("An IOException has occurred.");
-        }
-        finally{
-            writer.close(); //Closes writer
-        }
+    finally{
+      filereader.close(); //Closes filereader
     }
-    //_________________________________________________________________________________________________________
-    //Method that obtains the course codes for each period
-    public static void period_course_code_Obtainer(ArrayList<String[]> period_Ccodes, ArrayList<String[]> schedule_arr){
-        ArrayList<String> temp_Code_storer = new ArrayList<String>(); //ArrayList that temporarily stores the courses of a period
-        int index = 0; //Records where the loop left off
-        for (int i = index; i < schedule_arr.size(); i++){ 
-            if (schedule_arr.get(i)[0].equals("2")){ //If period 2 is reached
-                index = i; //Saves where it was left off
-                String[] period_courses = new String[temp_Code_storer.size()];
-                for (int k = 0; k < temp_Code_storer.size(); k++){
-                    period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-                }
-                period_Ccodes.add(period_courses);//Adds period course array into the arraylist
-                temp_Code_storer.clear(); //Clears arraylist for future sessions
-                break; //Breaks out of loop
-            }
-            for (int j = 0; j < schedule_arr.get(i).length; j++){
-                if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
-                    String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
-                    course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
-                    temp_Code_storer.add(course_code); //Adds array into arraylist
-                }
-            }
+  }
+  
+  //Method that stores all the course codes into an arraylist
+  public static void course_code_Saver(ArrayList<String[]> schedule_arr, ArrayList<String> course_code_arr) throws IOException{
+    for (int i = 0; i < schedule_arr.size(); i++){
+      for (int j = 0; j < schedule_arr.get(i).length; j++){
+        if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
+          String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
+          course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
+          if (!course_code_arr.contains(course_code)){ //If course code doesn't already exist in the arraylist, add it
+            course_code_arr.add(course_code); //Adds course code into the arraylist
+          }
         }
-        for (int i = index; i < schedule_arr.size(); i++){ 
-            if (schedule_arr.get(i)[0].equals("4")){ //If period 4 is reached
-                index = i; //Saves where it was left off
-                String[] period_courses = new String[temp_Code_storer.size()];
-                for (int k = 0; k < temp_Code_storer.size(); k++){
-                    period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-                }
-                period_Ccodes.add(period_courses);//Adds period course array into the arraylist
-                temp_Code_storer.clear(); //Clears arraylist for future sessions
-                break; //Breaks out of loop
-            }
-            for (int j = 0; j < schedule_arr.get(i).length; j++){
-                if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
-                    String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
-                    course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
-                    temp_Code_storer.add(course_code); //Adds array into arraylist
-                }
-            }
-        }
-        for (int i = index; i < schedule_arr.size(); i++){ 
-            if (schedule_arr.get(i)[0].equals("5")){ //If period 5 is reached
-                index = i; //Saves where it was left off
-                String[] period_courses = new String[temp_Code_storer.size()];
-                for (int k = 0; k < temp_Code_storer.size(); k++){
-                    period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-                }
-                period_Ccodes.add(period_courses);//Adds period course array into the arraylist
-                temp_Code_storer.clear(); //Clears arraylist for future sessions
-                break; //Breaks out of loop
-            }
-            for (int j = 0; j < schedule_arr.get(i).length; j++){
-                if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
-                    String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
-                    course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
-                    temp_Code_storer.add(course_code); //Adds array into arraylist
-                }
-            }
-        }
-        for (int i = index; i < schedule_arr.size(); i++){ 
-            for (int j = 0; j < schedule_arr.get(i).length; j++){
-                if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
-                    String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
-                    course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
-                    temp_Code_storer.add(course_code); //Adds array into arraylist
-                }
-            }
-        }
+      }
+    }
+  }
+  
+  
+  //Method that stores teacher quals into a file
+  public static void file_Save(String[] teacher_qual, String teacher_names, String path) throws IOException{
+    File teacher_qualifications = new File(path + "\\Teacher_Qualifications.csv");
+    //Writer set to true so that each write would add content without overwriting
+    FileWriter writer = new FileWriter(teacher_qualifications, true); 
+    try{
+      writer.append(teacher_names + ","); //Writes in teacher name
+      //Loop that populates the csv file with the teacher's qualifications
+      for (int i = 0; i < teacher_qual.length; i++){
+        writer.append(teacher_qual[i] + ","); //Writes in corresponding qualifications
+      }
+      writer.append("\n"); //Moves to next row
+    }
+    catch (IOException e){
+      System.out.println("An IOException has occurred.");
+    }
+    finally{
+      writer.close(); //Closes writer
+    }
+  }
+  //_________________________________________________________________________________________________________
+  //Method that obtains the course codes for each period
+  public static void period_course_code_Obtainer(ArrayList<String[]> period_Ccodes, ArrayList<String[]> schedule_arr){
+    ArrayList<String> temp_Code_storer = new ArrayList<String>(); //ArrayList that temporarily stores the courses of a period
+    int index = 0; //Records where the loop left off
+    for (int i = index; i < schedule_arr.size(); i++){ 
+      if (schedule_arr.get(i)[0].equals("2")){ //If period 2 is reached
+        index = i; //Saves where it was left off
         String[] period_courses = new String[temp_Code_storer.size()];
         for (int k = 0; k < temp_Code_storer.size(); k++){
-            period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
+          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
         }
-        
         period_Ccodes.add(period_courses);//Adds period course array into the arraylist
         temp_Code_storer.clear(); //Clears arraylist for future sessions
+        break; //Breaks out of loop
+      }
+      for (int j = 0; j < schedule_arr.get(i).length; j++){
+        if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
+          String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
+          course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
+          temp_Code_storer.add(course_code); //Adds array into arraylist
+        }
+      }
+    }
+    for (int i = index; i < schedule_arr.size(); i++){ 
+      if (schedule_arr.get(i)[0].equals("4")){ //If period 4 is reached
+        index = i; //Saves where it was left off
+        String[] period_courses = new String[temp_Code_storer.size()];
+        for (int k = 0; k < temp_Code_storer.size(); k++){
+          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
+        }
+        period_Ccodes.add(period_courses);//Adds period course array into the arraylist
+        temp_Code_storer.clear(); //Clears arraylist for future sessions
+        break; //Breaks out of loop
+      }
+      for (int j = 0; j < schedule_arr.get(i).length; j++){
+        if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
+          String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
+          course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
+          temp_Code_storer.add(course_code); //Adds array into arraylist
+        }
+      }
+    }
+    for (int i = index; i < schedule_arr.size(); i++){ 
+      if (schedule_arr.get(i)[0].equals("5")){ //If period 5 is reached
+        index = i; //Saves where it was left off
+        String[] period_courses = new String[temp_Code_storer.size()];
+        for (int k = 0; k < temp_Code_storer.size(); k++){
+          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
+        }
+        period_Ccodes.add(period_courses);//Adds period course array into the arraylist
+        temp_Code_storer.clear(); //Clears arraylist for future sessions
+        break; //Breaks out of loop
+      }
+      for (int j = 0; j < schedule_arr.get(i).length; j++){
+        if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
+          String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
+          course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
+          temp_Code_storer.add(course_code); //Adds array into arraylist
+        }
+      }
+    }
+    for (int i = index; i < schedule_arr.size(); i++){ 
+      for (int j = 0; j < schedule_arr.get(i).length; j++){
+        if (schedule_arr.get(i)[j].contains("-")){ //All course codes have a - which is how we find them
+          String course_code = schedule_arr.get(i)[j]; //Temporarily stores course code + section number into a string value
+          course_code = course_code.substring(0, course_code.length() - 3); //Removes the - and section number
+          temp_Code_storer.add(course_code); //Adds array into arraylist
+        }
+      }
+    }
+    String[] period_courses = new String[temp_Code_storer.size()];
+    for (int k = 0; k < temp_Code_storer.size(); k++){
+      period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
     }
     
+    period_Ccodes.add(period_courses);//Adds period course array into the arraylist
+    temp_Code_storer.clear(); //Clears arraylist for future sessions
+  }
+  
+  
+  //___________________________________________________________________________________________________________
+  public static void main(String[] args) throws Exception{
     
-    //___________________________________________________________________________________________________________
-    public static void main(String[] args) throws Exception{
-        
-        file_Reader(currentDirPath, schedule_Arr);
-        
-        course_code_Saver(schedule_Arr, course_Codes);
-        
-        period_course_code_Obtainer(period_Course_codes, schedule_Arr);
-        
-        launch(args);
+    file_Reader(currentDirPath, schedule_Arr);
+    
+    course_code_Saver(schedule_Arr, course_Codes);
+    
+    period_course_code_Obtainer(period_Course_codes, schedule_Arr);
+    
+    launch(args);
+  }
+  
+  
+  //GUI METHODS 
+  //_____________________________________________________________________________________________________________-
+  public void start(Stage primaryStage) throws Exception{
+    window = primaryStage;
+    window.setTitle("Course Scheduling");
+    execute();
+    
+    
+  }
+  
+  public void execute() throws IOException{
+    
+    int response = BeginClass.startProgramWindow();
+    if (response == 2) {
+      createQualifications();
+    }
+    else if (response == 1) {
+      createTimeTable();
+    }
+    else if (response == 0) {
+      Platform.exit();
+    }
+  }
+  
+  public void createQualifications() throws IOException{
+    //clears if used multiple times in a session
+    
+    qualificationsArr.clear();
+    restrictionsArr.clear();
+    
+    BorderPane bp = new BorderPane();
+    VBox box1 = new VBox(10);
+    VBox box2 = new VBox(10);
+    
+    Label restrictionsLabel = new Label("Check restrictions that apply:");
+    Label titleLabel = new Label("Check qualifications that apply:");
+    Label nameLabel = new Label("Enter full name of instructor:");
+    teacherNameInput = new TextField();
+    saveButton = new Button("Finish");
+    cancelButton = new Button("Cancel");
+    
+    teacherNameInput.setPromptText("Firstname, Lastname");
+    titleLabel.setPadding(new Insets(10, 10, 10, 10));
+    nameLabel.setPadding(new Insets(50, 0, 0, 0));
+    
+    
+    CheckBox p1Box = new CheckBox("No Period 1");
+    restrictionsArr.add(p1Box);
+    CheckBox p2Box = new CheckBox("No Period 2");
+    restrictionsArr.add(p2Box);
+    CheckBox p4Box = new CheckBox("No Period 4");
+    restrictionsArr.add(p4Box);
+    CheckBox p5Box = new CheckBox("No Period 5");
+    restrictionsArr.add(p5Box);
+    
+    
+    box2.getChildren().addAll(restrictionsLabel, p1Box, p2Box, p4Box, p5Box, nameLabel, teacherNameInput, saveButton, cancelButton);
+    box2.setMinWidth(200);
+    
+    box1.setPadding(new Insets(20, 20, 20, 20));
+    box2.setPadding(new Insets(0, 20, 20, 20));
+    
+    ScrollPane scroller = new ScrollPane();
+    scroller.setPrefSize(60, 120);
+    
+    for (int i = 0; i < course_Codes.size(); i++) {
+      qualificationsArr.add(new CheckBox(course_Codes.get(i)));
+      box1.getChildren().addAll(qualificationsArr.get(i));
+      
     }
     
+    scroller.setContent(box1);
+    bp.setCenter(scroller);
+    bp.setRight(box2);
+    bp.setTop(titleLabel);
+    bp.setPadding(new Insets(10, 10, 10, 10));
     
-    //GUI METHODS 
-    //_____________________________________________________________________________________________________________-
-    public void start(Stage primaryStage) throws Exception{
-        window = primaryStage;
-        window.setTitle("Course Scheduling");
+    
+    window.setTitle("Course Scheduler");
+    saveButton.setOnAction(e -> {
+      try {
+        retrieveCheckBoxes();
+      }
+      catch(IOException e2) {
+        System.out.println("Retreiving checkBox error");
+      }
+    });
+    cancelButton.setOnAction(e -> {
+      try {
+        cancelQual();
+      }
+      catch (IOException e3) {
+        System.out.println("Cancel teacher error");
+      }
+    });
+    
+    Scene qualScene = new Scene(bp, 500, 450);
+    window.setScene(qualScene);
+    window.show();
+  }
+  public void retrieveCheckBoxes() throws IOException{
+    
+    
+    System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
+    teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
+    for (int i = 0; i < qualificationsArr.size(); i++) {
+      if (qualificationsArr.get(i).isSelected()) {
+        System.out.println(qualificationsArr.get(i).getText());
+        teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
+        
+      }
+    }
+    //Creates an array that stores the values of the arraylist for teacher qualifications
+    String[] teacher_Qualifications = new String[teacher_Quals.size()];
+    for (int i = 0; i < teacher_Quals.size(); i++){
+      teacher_Qualifications[i] = teacher_Quals.get(i);
+    }
+    teacher_Quals.clear(); //Clears values in arraylist for next session
+    //Creates an entry into the hashmap with teacher name as the key and the teacher quals array as the value
+    teacher_names_and_quals.put(teacherNameInput.getText(), teacher_Qualifications);
+    
+    for (int i = 0; i < restrictionsArr.size(); i++) {
+      if (restrictionsArr.get(i).isSelected()) {
+        System.out.println(restrictionsArr.get(i).getText());
+      }
+    }
+    file_Save(teacher_Qualifications, teacherNameInput.getText(), currentDirPath);
+    window.close();
+    execute();
+  }
+  
+  
+  
+  public void cancelQual() throws IOException{
+    window.close();
+    execute();
+  }
+  //Time table creation
+  //__________________________________________________________________________________________________________
+  public void createTimeTable() {
+    table = new TableView<>();
+    
+    tableBackButton = new Button("Back");
+    VBox tableLayout = new VBox(5);
+    tableLayout.setPadding(new Insets(10, 10, 10, 10));
+    HBox bottomBox = new HBox(20);
+    bottomBox.setPadding(new Insets(10, 10, 5, 10));
+    tableLayout.setAlignment(Pos.CENTER);
+    
+    TableColumn<Teacher, String> nameColumn = new TableColumn<>("Name");
+    nameColumn.setMinWidth(70);
+    nameColumn.setCellValueFactory(new PropertyValueFactory<>("teacherName"));
+    
+    TableColumn<Teacher, String> p1Column = new TableColumn<>("Period 1");
+    p1Column.setMinWidth(70);
+    p1Column.setCellValueFactory(new PropertyValueFactory<>("period1"));
+    
+    TableColumn<Teacher, String> p2Column = new TableColumn<>("Period 2");
+    p2Column.setMinWidth(70);
+    p2Column.setCellValueFactory(new PropertyValueFactory<>("period2"));
+    
+    TableColumn<Teacher, String> p4Column = new TableColumn<>("Period 4");
+    p4Column.setMinWidth(70);
+    p4Column.setCellValueFactory(new PropertyValueFactory<>("period4"));
+    
+    TableColumn<Teacher, String> p5Column = new TableColumn<>("Period 5");
+    p5Column.setMinWidth(70);
+    p5Column.setCellValueFactory(new PropertyValueFactory<>("period5"));
+    
+    table.setItems(getTeacher());
+    
+    table.getColumns().addAll(nameColumn, p1Column, p2Column, p4Column, p5Column);
+    //makes sure all of the space is distributed amongst all columns instead of creating an extra one
+    table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+    
+    bottomBox.getChildren().addAll(tableBackButton);
+    tableLayout.getChildren().addAll(table, bottomBox);
+    
+    tableBackButton.setOnAction(e -> {
+      table.getItems().clear();
+      window.close();
+      try {
         execute();
-        
-        
-    }
-    
-    public void execute() throws IOException{
-        
-        int response = BeginClass.startProgramWindow();
-        if (response == 2) {
-            createQualifications();
-        }
-        else if (response == 1) {
-            createTimeTable();
-        }
-        else if (response == 0) {
-            Platform.exit();
-        }
-    }
-    
-    public void createQualifications() throws IOException{
-        //clears if used multiple times in a session
-        
-        teacher_Quals.clear();
-        teacher_names_and_quals.clear();
-       
-        qualificationsArr.clear();
-        restrictionsArr.clear();
-        
-        BorderPane bp = new BorderPane();
-        VBox box1 = new VBox(10);
-        VBox box2 = new VBox(10);
-        
-        Label restrictionsLabel = new Label("Check restrictions that apply:");
-        Label titleLabel = new Label("Check qualifications that apply:");
-        Label nameLabel = new Label("Enter full name of instructor:");
-        teacherNameInput = new TextField();
-        saveButton = new Button("Finish");
-        cancelButton = new Button("Cancel");
-        
-        teacherNameInput.setPromptText("Firstname, Lastname");
-        titleLabel.setPadding(new Insets(10, 10, 10, 10));
-        nameLabel.setPadding(new Insets(50, 0, 0, 0));
-        
-        
-        CheckBox p1Box = new CheckBox("No Period 1");
-        restrictionsArr.add(p1Box);
-        CheckBox p2Box = new CheckBox("No Period 2");
-        restrictionsArr.add(p2Box);
-        CheckBox p4Box = new CheckBox("No Period 4");
-        restrictionsArr.add(p4Box);
-        CheckBox p5Box = new CheckBox("No Period 5");
-        restrictionsArr.add(p5Box);
-        
-        
-        box2.getChildren().addAll(restrictionsLabel, p1Box, p2Box, p4Box, p5Box, nameLabel, teacherNameInput, saveButton, cancelButton);
-        box2.setMinWidth(200);
-        
-        box1.setPadding(new Insets(20, 20, 20, 20));
-        box2.setPadding(new Insets(0, 20, 20, 20));
-        
-        ScrollPane scroller = new ScrollPane();
-        scroller.setPrefSize(60, 120);
-        
-        for (int i = 0; i < course_Codes.size(); i++) {
-            qualificationsArr.add(new CheckBox(course_Codes.get(i)));
-            box1.getChildren().addAll(qualificationsArr.get(i));
-            
-        }
-        
-        scroller.setContent(box1);
-        bp.setCenter(scroller);
-        bp.setRight(box2);
-        bp.setTop(titleLabel);
-        bp.setPadding(new Insets(10, 10, 10, 10));
-        
-        
-        window.setTitle("Course Scheduler");
-        saveButton.setOnAction(e -> {
-            try {
-                retrieveCheckBoxes();
-            }
-            catch(IOException e2) {
-                System.out.println("Retreiving checkBox error");
-            }
-        });
-        cancelButton.setOnAction(e -> {
-            try {
-                cancelQual();
-            }
-            catch (IOException e3) {
-                System.out.println("Cancel teacher error");
-            }
-        });
-        
-        Scene qualScene = new Scene(bp, 500, 450);
-        window.setScene(qualScene);
-        window.show();
-    }
-    public void retrieveCheckBoxes() throws IOException{
-        
-        
-        System.out.println(teacherNameInput.getText()); //Mahyar help me fix this later
-        teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
-        for (int i = 0; i < qualificationsArr.size(); i++) {
-            if (qualificationsArr.get(i).isSelected()) {
-                System.out.println(qualificationsArr.get(i).getText());
-                teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
-                
-            }
-        }
-        //Creates an array that stores the values of the arraylist for teacher qualifications
-        String[] teacher_Qualifications = new String[teacher_Quals.size()];
-        for (int i = 0; i < teacher_Quals.size(); i++){
-            teacher_Qualifications[i] = teacher_Quals.get(i);
-        }
-        teacher_Quals.clear(); //Clears values in arraylist for next session
-        //Creates an entry into the hashmap with teacher name as the key and the teacher quals array as the value
-        teacher_names_and_quals.put(teacherNameInput.getText(), teacher_Qualifications);
-        //Adds teacher_quals into the main qualifications arraylist
-        all_teacher_Qualifications.add(teacher_Qualifications);
-        for (int i = 0; i < restrictionsArr.size(); i++) {
-            if (restrictionsArr.get(i).isSelected()) {
-                System.out.println(restrictionsArr.get(i).getText());
-            }
-        }
-        file_Save(all_teacher_Qualifications, teacher_Name, currentDirPath);
-        window.close();
-        execute();
-    }
+      }
+      catch (IOException e2) {
+        System.out.println("Back button error");
+      }
+    });
     
     
+    Scene tableScene = new Scene(tableLayout, 750, 500);
+    window.setScene(tableScene);
+    window.show();
+  }
+  
+  public ObservableList<Teacher> getTeacher() {
+    //ObservableList that was declared as a global variable
+    teacherArr.add(new Teacher("Wilfred Ho", "Math", "Computer Science", "English", "Biology"));
     
-    public void cancelQual() throws IOException{
-        window.close();
-        execute();
-    }
-    //Time table creation
-    //__________________________________________________________________________________________________________
-    public void createTimeTable() {
-        table = new TableView<>();
-        
-        tableBackButton = new Button("Back");
-        VBox tableLayout = new VBox(5);
-        tableLayout.setPadding(new Insets(10, 10, 10, 10));
-        HBox bottomBox = new HBox(20);
-        bottomBox.setPadding(new Insets(10, 10, 5, 10));
-        tableLayout.setAlignment(Pos.CENTER);
-        
-        TableColumn<Teacher, String> nameColumn = new TableColumn<>("Name");
-        nameColumn.setMinWidth(70);
-        nameColumn.setCellValueFactory(new PropertyValueFactory<>("teacherName"));
-        
-        TableColumn<Teacher, String> p1Column = new TableColumn<>("Period 1");
-        p1Column.setMinWidth(70);
-        p1Column.setCellValueFactory(new PropertyValueFactory<>("period1"));
-        
-        TableColumn<Teacher, String> p2Column = new TableColumn<>("Period 2");
-        p2Column.setMinWidth(70);
-        p2Column.setCellValueFactory(new PropertyValueFactory<>("period2"));
-        
-        TableColumn<Teacher, String> p4Column = new TableColumn<>("Period 4");
-        p4Column.setMinWidth(70);
-        p4Column.setCellValueFactory(new PropertyValueFactory<>("period4"));
-        
-        TableColumn<Teacher, String> p5Column = new TableColumn<>("Period 5");
-        p5Column.setMinWidth(70);
-        p5Column.setCellValueFactory(new PropertyValueFactory<>("period5"));
-        
-        table.setItems(getTeacher());
-        
-        table.getColumns().addAll(nameColumn, p1Column, p2Column, p4Column, p5Column);
-        //makes sure all of the space is distributed amongst all columns instead of creating an extra one
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
-        bottomBox.getChildren().addAll(tableBackButton);
-        tableLayout.getChildren().addAll(table, bottomBox);
-        
-        tableBackButton.setOnAction(e -> {
-            table.getItems().clear();
-            window.close();
-            try {
-                execute();
-            }
-            catch (IOException e2) {
-                System.out.println("Babk button error");
-            }
-        });
-        
-        
-        Scene tableScene = new Scene(tableLayout, 750, 500);
-        window.setScene(tableScene);
-        window.show();
-    }
-    
-    public ObservableList<Teacher> getTeacher() {
-        //ObservableList that was declared as a global variable
-        teacherArr.add(new Teacher("Wilfred Ho", "Math", "Computer Science", "English", "Biology"));
-        
-        return teacherArr;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    return teacherArr;
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 }
 
 
