@@ -100,6 +100,26 @@ public class courseSchedulingGUI extends Application {
     }
   }
   
+  //Method that stores teacher restrictions into a file
+  public static void restrict_file_Save(String[] teacher_res, String teacher_names, String path) throws IOException{
+    File teacher_restrictions = new File(path + "\\Teacher_Restrictions.csv");
+    //Writer set to true so that each write would add content without overwriting
+    FileWriter writer = new FileWriter(teacher_restrictions, true); 
+    try{
+      writer.append(teacher_names + ","); //Writes in teacher name
+      //Loop that populates the csv file with the teacher's restrictions
+      for (int i = 0; i < teacher_res.length; i++){
+        writer.append(teacher_res[i] + ","); //Writes in corresponding restrictions
+      }
+      writer.append("\n"); //Moves to next row
+    }
+    catch (IOException e){
+      System.out.println("An IOException has occurred.");
+    }
+    finally{
+      writer.close(); //Closes writer
+    }
+  }
   //Method that obtains the course codes for each period
   public static void period_course_code_Obtainer(ArrayList<String[]> period_Ccodes, ArrayList<String[]> schedule_arr){
     ArrayList<String> temp_Code_storer = new ArrayList<String>(); //ArrayList that temporarily stores the courses of a period
@@ -167,25 +187,27 @@ public class courseSchedulingGUI extends Application {
     temp_Code_storer.clear(); //Clears arraylist for future sessions
   }
   
+  
   //Reads created teacher_qualifications file and stores the contents into a hashmap
-  public static void hashTable_Storer(String path, HashMap<String, String[]>teacher_Hashmap) throws IOException{
+  public static void hashTable_Storer(String path, HashMap<String, String[]>teacher_Hashmap, ArrayList<String> teacher_Names) throws IOException{
     File course_Scheduling = new File(currentDirPath + "\\Teacher_Qualifications.csv"); //Finds csv
     String line = " "; //Initializes line variable
     ArrayList<String> temp_teacher_quals = new ArrayList<String>(); //Temp array to store the remainder of the array
     BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
+    teacher_Hashmap.clear(); //Clears Hashmap to make sure it was empty
+    teacher_Names.clear(); //Clears arraylist to make sure it was empty
     try {
       while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
         String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
         String teacher_name = temprowarray[0]; //Stores teacher name into a temp string value
-        
+        teacher_Names.add(teacher_name); //Adds teacher name into teacher names arraylist
         for (int i = 1; i < temprowarray.length; i++){
           temp_teacher_quals.add(temprowarray[i]); //Adds array values into arraylist
         }
         String[] hashmap_qual_Arr = temp_teacher_quals.toArray(new String[temp_teacher_quals.size()]); //Converts the arraylist back into an array
         teacher_Hashmap.put(teacher_name, hashmap_qual_Arr); //Adds items into a hashmap
-        temp_teacher_quals.clear(); //Clears arraylist
+        temp_teacher_quals.clear(); //Clears the arraylist
       }
-      
       
     }
     catch (IOException e){ //If a file wasn't found
