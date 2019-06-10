@@ -332,7 +332,12 @@ public class courseSchedulingGUI extends Application {
     
     for (int i = 0; i < restrictionsArr.size(); i++) {
       if (restrictionsArr.get(i).isSelected()) {
-        System.out.println(restrictionsArr.get(i).getText());
+        //returns true 
+        System.out.println(restrictionsArr.get(i).isSelected());
+      }
+      else {
+        //set index as false in boolean arraylist 
+        System.out.println("false");
       }
     }
     file_Save(teacher_Qualifications, teacherNameInput.getText(), currentDirPath);
