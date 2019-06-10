@@ -51,19 +51,37 @@ class teacher_Slotting_IO{
   
   
   //Method that stores teacher quals into a file
-  public static void file_Save(ArrayList<String[]> teacher_qual, ArrayList<String> teacher_names, String path) throws IOException{
-    File teacher_qualifications = new File(path + "\\Teacher Qualifications");
+  public static void file_Save(String[] teacher_qual, String teacher_names, String path) throws IOException{
+    File teacher_qualifications = new File(path + "\\Teacher_Qualifications.csv");
     //Writer set to true so that each write would add content without overwriting
     FileWriter writer = new FileWriter(teacher_qualifications, true); 
     try{
-      //Loop that populates the csv file
-      for (int i = 0; i < teacher_names.size(); i++){
-        writer.append(teacher_names.get(i) + ","); //Writes in teacher name
-        for (int j = 0; j < teacher_qual.get(i).length; j++){
-          writer.append(teacher_qual.get(i)[j] + ","); //Writes in corresponding qualifications
-        }
-        writer.append("\n"); //Moves to next row
+      writer.append(teacher_names + ","); //Writes in teacher name
+      //Loop that populates the csv file with the teacher's qualifications
+      for (int i = 0; i < teacher_qual.length; i++){
+        writer.append(teacher_qual[i] + ","); //Writes in corresponding qualifications
       }
+      writer.append("\n"); //Moves to next row
+    }
+    catch (IOException e){
+      System.out.println("An IOException has occurred.");
+    }
+    finally{
+      writer.close(); //Closes writer
+    }
+  }
+  //Method that stores teacher restrictions into a file
+  public static void restrict_file_Save(String[] teacher_res, String teacher_names, String path) throws IOException{
+    File teacher_restrictions = new File(path + "\\Teacher_Restrictions.csv");
+    //Writer set to true so that each write would add content without overwriting
+    FileWriter writer = new FileWriter(teacher_restrictions, true); 
+    try{
+      writer.append(teacher_names + ","); //Writes in teacher name
+      //Loop that populates the csv file with the teacher's restrictions
+      for (int i = 0; i < teacher_res.length; i++){
+        writer.append(teacher_res[i] + ","); //Writes in corresponding restrictions
+      }
+      writer.append("\n"); //Moves to next row
     }
     catch (IOException e){
       System.out.println("An IOException has occurred.");
@@ -80,10 +98,7 @@ class teacher_Slotting_IO{
     for (int i = index; i < schedule_arr.size(); i++){ 
       if (schedule_arr.get(i)[0].equals("2")){ //If period 2 is reached
         index = i; //Saves where it was left off
-        String[] period_courses = new String[temp_Code_storer.size()];
-        for (int k = 0; k < temp_Code_storer.size(); k++){
-          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-        }
+        String[] period_courses = temp_Code_storer.toArray(new String[temp_Code_storer.size()]); //Converts arraylist into an array
         period_Ccodes.add(period_courses);//Adds period course array into the arraylist
         temp_Code_storer.clear(); //Clears arraylist for future sessions
         break; //Breaks out of loop
@@ -99,10 +114,7 @@ class teacher_Slotting_IO{
     for (int i = index; i < schedule_arr.size(); i++){ 
       if (schedule_arr.get(i)[0].equals("4")){ //If period 4 is reached
         index = i; //Saves where it was left off
-        String[] period_courses = new String[temp_Code_storer.size()];
-        for (int k = 0; k < temp_Code_storer.size(); k++){
-          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-        }
+        String[] period_courses = temp_Code_storer.toArray(new String[temp_Code_storer.size()]); //Converts arraylist into an array
         period_Ccodes.add(period_courses);//Adds period course array into the arraylist
         temp_Code_storer.clear(); //Clears arraylist for future sessions
         break; //Breaks out of loop
@@ -118,10 +130,7 @@ class teacher_Slotting_IO{
     for (int i = index; i < schedule_arr.size(); i++){ 
       if (schedule_arr.get(i)[0].equals("5")){ //If period 5 is reached
         index = i; //Saves where it was left off
-        String[] period_courses = new String[temp_Code_storer.size()];
-        for (int k = 0; k < temp_Code_storer.size(); k++){
-          period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-        }
+        String[] period_courses = temp_Code_storer.toArray(new String[temp_Code_storer.size()]); //Converts arraylist into an array
         period_Ccodes.add(period_courses);//Adds period course array into the arraylist
         temp_Code_storer.clear(); //Clears arraylist for future sessions
         break; //Breaks out of loop
@@ -143,14 +152,44 @@ class teacher_Slotting_IO{
         }
       }
     }
-    String[] period_courses = new String[temp_Code_storer.size()];
-    for (int k = 0; k < temp_Code_storer.size(); k++){
-      period_courses[k] = temp_Code_storer.get(k); //Transfers arraylist info into an array
-    }
+    String[] period_courses = temp_Code_storer.toArray(new String[temp_Code_storer.size()]); //Converts arraylist into an array
     
     period_Ccodes.add(period_courses);//Adds period course array into the arraylist
     temp_Code_storer.clear(); //Clears arraylist for future sessions
   }
+  
+  //Reads created teacher_qualifications file and stores the contents into a hashmap
+  public static void hashTable_Storer(String path, HashMap<String, String[]>teacher_Hashmap, ArrayList<String> teacher_Names) throws IOException{
+    File course_Scheduling = new File(currentDirPath + "\\Teacher_Qualifications.csv"); //Finds csv
+    String line = " "; //Initializes line variable
+    ArrayList<String> temp_teacher_quals = new ArrayList<String>(); //Temp array to store the remainder of the array
+    BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
+    teacher_Hashmap.clear(); //Clears Hashmap to make sure it was empty
+    teacher_Names.clear(); //Clears arraylist to make sure it was empty
+    try {
+      while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
+        String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
+        String teacher_name = temprowarray[0]; //Stores teacher name into a temp string value
+        teacher_Names.add(teacher_name); //Adds teacher name into teacher names arraylist
+        for (int i = 1; i < temprowarray.length; i++){
+          temp_teacher_quals.add(temprowarray[i]); //Adds array values into arraylist
+        }
+        String[] hashmap_qual_Arr = temp_teacher_quals.toArray(new String[temp_teacher_quals.size()]); //Converts the arraylist back into an array
+        teacher_Hashmap.put(teacher_name, hashmap_qual_Arr); //Adds items into a hashmap
+        temp_teacher_quals.clear(); //Clears the arraylist
+      }
+      
+    }
+    catch (IOException e){ //If a file wasn't found
+      System.out.println("A file was not found.");
+    }
+    finally{
+      filereader.close(); //Closes filereader
+    }
+  }
+  
+  
+  
   public static void main(String[] args) throws IOException{
     file_Reader(currentDirPath, schedule_Arr);
     course_code_Saver(schedule_Arr, course_Codes);
@@ -162,6 +201,5 @@ class teacher_Slotting_IO{
       }
     }
   }
-  
   
 }
