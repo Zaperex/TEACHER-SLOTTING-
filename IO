@@ -15,9 +15,14 @@ class teacher_Slotting_IO{
   
   static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
   
+  //Method that moves a file
+  public static void file_Mover(String filePath, String path) throws IOException{
+    Path filemove = Files.move(Paths.get(filePath), Paths.get(path + "\\Course_Schedule.csv")); //Moves the file
+  }
+  
   //Method to read and store the content of a csv into an arraylist
   public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
-    File course_Scheduling = new File(currentDirPath + "\\WH.csv"); //Finds csv
+    File course_Scheduling = new File(currentDirPath + "\\Course_Schedule.csv"); //Finds csv
     String line = " "; //Initializes line variable
     BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
     try {
@@ -71,7 +76,7 @@ class teacher_Slotting_IO{
     }
   }
   //Method that stores teacher restrictions into a file
-  public static void restrict_file_Save(String[] teacher_res, String teacher_names, String path) throws IOException{
+  public static void restrict_file_Save(Boolean[] teacher_res, String teacher_names, String path) throws IOException{
     File teacher_restrictions = new File(path + "\\Teacher_Restrictions.csv");
     //Writer set to true so that each write would add content without overwriting
     FileWriter writer = new FileWriter(teacher_restrictions, true); 
@@ -79,7 +84,7 @@ class teacher_Slotting_IO{
       writer.append(teacher_names + ","); //Writes in teacher name
       //Loop that populates the csv file with the teacher's restrictions
       for (int i = 0; i < teacher_res.length; i++){
-        writer.append(teacher_res[i] + ","); //Writes in corresponding restrictions
+        writer.append((Boolean.toString(teacher_res[i])) + ","); //Writes in corresponding restrictions
       }
       writer.append("\n"); //Moves to next row
     }
@@ -159,7 +164,7 @@ class teacher_Slotting_IO{
   }
   
   //Reads created teacher_qualifications file and stores the contents into a hashmap
-  public static void hashTable_Storer(String path, HashMap<String, String[]>teacher_Hashmap, ArrayList<String> teacher_Names) throws IOException{
+  public static void hashMap_Storer(String path, HashMap<String, String[]>teacher_Hashmap, ArrayList<String> teacher_Names) throws IOException{
     File course_Scheduling = new File(currentDirPath + "\\Teacher_Qualifications.csv"); //Finds csv
     String line = " "; //Initializes line variable
     ArrayList<String> temp_teacher_quals = new ArrayList<String>(); //Temp array to store the remainder of the array
@@ -188,7 +193,34 @@ class teacher_Slotting_IO{
     }
   }
   
-  
+  //Reads created teacher_restrictions file and stores the contents into a hashmap
+  public static void restrict_hashMap_Storer(String path, HashMap<String, Boolean[]>teacher_res_Hashmap, ArrayList<String> teacher_Names) throws IOException{
+    File course_Scheduling = new File(currentDirPath + "\\Teacher_Restrictions.csv"); //Finds csv
+    String line = " "; //Initializes line variable
+    ArrayList<Boolean> temp_teacher_res = new ArrayList<Boolean>(); //Temp array to store the remainder of the array
+    BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
+    teacher_res_Hashmap.clear(); //Clears Hashmap to make sure it was empty
+    teacher_Names.clear(); //Clears arraylist to make sure it was empty
+    try {
+      while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
+        String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
+        String teacher_name = temprowarray[0]; //Stores teacher name into a temp boolean value
+        teacher_Names.add(teacher_name); //Adds teacher name into teacher names arraylist
+        for (int i = 1; i < temprowarray.length; i++){
+          temp_teacher_res.add(Boolean.parseBoolean(temprowarray[i])); //Adds array values into arraylist
+        }
+        Boolean[] hashmap_res_Arr = temp_teacher_res.toArray(new Boolean[temp_teacher_res.size()]); //Converts the arraylist back into an array
+        teacher_res_Hashmap.put(teacher_name, hashmap_res_Arr); //Adds items into a hashmap
+        temp_teacher_res.clear(); //Clears the arraylist
+      }
+    }
+      catch(IOException e){
+        System.out.println("IOExcpetion has occured");
+      }
+      finally{
+        filereader.close(); //Closes filereader
+      }
+    }
   
   public static void main(String[] args) throws IOException{
     file_Reader(currentDirPath, schedule_Arr);
