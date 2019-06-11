@@ -1,0 +1,33 @@
+//Sorting values in hashmap (descending order)
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
+import static java.util.stream.Collectors.*;
+import static java.util.Map.Entry.*;
+
+class sortHashmapTest {
+  public static void main(String[] args) {
+    //In this hashmap, the key represents the course code while the value represents how many times the course code appears within the arraylist of teachers and their qualifications
+    Map<String, Integer> numberTeacher = new HashMap<String, Integer>();
+    numberTeacher.put("EFGH-02", 6);
+    numberTeacher.put("MNOP-04", 12);
+    numberTeacher.put("IJKL-03", 4);
+    numberTeacher.put("ABCD-01", 3);    
+    
+    //We want to sort the values by descending order in order to prioritize the slotting of certain courses
+    //The smaller the value, the smaller the amount of teachers that can teach the course
+    Map<String, Integer> sortedDescending = numberTeacher
+      //Creates a set of entries in which the method will sort the values by least to greatest
+      //Using collect() --> we put the new values in a linked hashmap (allows to create a specific order in which the key and value appear) called sortedDescending
+      .entrySet()
+      .stream()
+      .sorted(comparingByValue())
+    .collect(toMap(e -> e.getKey(), e -> e.getValue(), (e1, e2) -> e2, LinkedHashMap::new));
+    
+    System.out.println(numberTeacher);
+    System.out.println(sortedDescending);
+  }
+}
