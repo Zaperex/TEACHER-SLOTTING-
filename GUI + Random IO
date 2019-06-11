@@ -224,23 +224,23 @@ public class courseSchedulingGUI extends Application {
       filereader.close(); //Closes filereader
     }
   }
-  //Reads created teacher_restrictions file and stores the contents into a hashmap
-  public static void restrict_hashMap_Storer(String path, HashMap<String, String[]>teacher_res_Hashmap, ArrayList<String> teacher_Names) throws IOException{
+  //Method that reads the items in the restrictions file and stores it in a hashmap
+  public static void restrict_hashMap_Storer(String path, HashMap<String, Boolean[]>teacher_res_Hashmap, ArrayList<String> teacher_Names) throws IOException{
     File course_Scheduling = new File(currentDirPath + "\\Teacher_Restrictions.csv"); //Finds csv
     String line = " "; //Initializes line variable
-    ArrayList<String> temp_teacher_res = new ArrayList<String>(); //Temp array to store the remainder of the array
+    ArrayList<Boolean> temp_teacher_res = new ArrayList<Boolean>(); //Temp array to store the remainder of the array
     BufferedReader filereader = new BufferedReader(new FileReader(course_Scheduling)); //Bufferedreader to read the file
     teacher_res_Hashmap.clear(); //Clears Hashmap to make sure it was empty
     teacher_Names.clear(); //Clears arraylist to make sure it was empty
     try {
       while ((line = filereader.readLine())!= null){ //Keeps running until all lines are read
         String[] temprowarray = line.split(","); //Stores the seperated values of each row into an array
-        String teacher_name = temprowarray[0]; //Stores teacher name into a temp string value
+        String teacher_name = temprowarray[0]; //Stores teacher name
         teacher_Names.add(teacher_name); //Adds teacher name into teacher names arraylist
         for (int i = 1; i < temprowarray.length; i++){
-          temp_teacher_res.add(temprowarray[i]); //Adds array values into arraylist
+          temp_teacher_res.add(Boolean.parseBoolean(temprowarray[i])); //Adds array values into arraylist
         }
-        String[] hashmap_res_Arr = temp_teacher_res.toArray(new String[temp_teacher_res.size()]); //Converts the arraylist back into an array
+        Boolean[] hashmap_res_Arr = temp_teacher_res.toArray(new Boolean[temp_teacher_res.size()]); //Converts the arraylist back into an array
         teacher_res_Hashmap.put(teacher_name, hashmap_res_Arr); //Adds items into a hashmap
         temp_teacher_res.clear(); //Clears the arraylist
       }
