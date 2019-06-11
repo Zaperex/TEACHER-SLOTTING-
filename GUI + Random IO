@@ -107,8 +107,8 @@ public class courseSchedulingGUI extends Application {
     }
   }
   
-  //Method that stores teacher restrictions into a file
-  public static void restrict_file_Save(String[] teacher_res, String teacher_names, String path) throws IOException{
+   //Method that stores teacher restrictions into a file
+  public static void restrict_file_Save(Boolean[] teacher_res, String teacher_names, String path) throws IOException{
     File teacher_restrictions = new File(path + "\\Teacher_Restrictions.csv");
     //Writer set to true so that each write would add content without overwriting
     FileWriter writer = new FileWriter(teacher_restrictions, true); 
@@ -116,7 +116,7 @@ public class courseSchedulingGUI extends Application {
       writer.append(teacher_names + ","); //Writes in teacher name
       //Loop that populates the csv file with the teacher's restrictions
       for (int i = 0; i < teacher_res.length; i++){
-        writer.append(teacher_res[i] + ","); //Writes in corresponding restrictions
+        writer.append((Boolean.toString(teacher_res[i])) + ","); //Writes in corresponding restrictions
       }
       writer.append("\n"); //Moves to next row
     }
