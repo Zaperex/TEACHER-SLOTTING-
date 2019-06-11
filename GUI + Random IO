@@ -241,16 +241,17 @@ public class courseSchedulingGUI extends Application {
           temp_teacher_res.add(temprowarray[i]); //Adds array values into arraylist
         }
         String[] hashmap_res_Arr = temp_teacher_res.toArray(new String[temp_teacher_res.size()]); //Converts the arraylist back into an array
-        teacher_Hashmap.put(teacher_name, hashmap_res_Arr); //Adds items into a hashmap
+        teacher_res_Hashmap.put(teacher_name, hashmap_res_Arr); //Adds items into a hashmap
         temp_teacher_res.clear(); //Clears the arraylist
       }
-      catch(IOException e){
-        System.out.println("IOExcpetion has occured");
-      }
-      finally{
-        filereader.close(); //Closes filereader
-      }
     }
+    catch(IOException e){
+      System.out.println("IOExcpetion has occured");
+    }
+    finally{
+      filereader.close(); //Closes filereader
+    }
+  }
   //___________________________________________________________________________________________________________
   public static void main(String[] args) throws Exception{
     
@@ -491,16 +492,16 @@ public class courseSchedulingGUI extends Application {
     FileChooser fileChooser = new FileChooser();
     fileChooser.setTitle("Time Table CSV");
     File file = fileChooser.showOpenDialog(window);
-      if (file != null) {
-        timeTablePathway = file.toString();        
-      }
-      else {
-        timeTablePathway = null;
-      }
-      
-      System.out.println(timeTablePathway);
-      
-      return timeTablePathway;
+    if (file != null) {
+      timeTablePathway = file.toString();        
+    }
+    else {
+      timeTablePathway = null;
+    }
+    
+    System.out.println(timeTablePathway);
+    
+    return timeTablePathway;
     
   }
   
