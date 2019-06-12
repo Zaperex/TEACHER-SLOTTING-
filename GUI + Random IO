@@ -255,11 +255,7 @@ public class courseSchedulingGUI extends Application {
   //___________________________________________________________________________________________________________
   public static void main(String[] args) throws Exception{
     
-    file_Reader(currentDirPath, schedule_Arr);
     
-    course_code_Saver(schedule_Arr, course_Codes);
-    
-    period_course_code_Obtainer(period_Course_codes, schedule_Arr);
     
     launch(args);
   }
@@ -270,7 +266,15 @@ public class courseSchedulingGUI extends Application {
   public void start(Stage primaryStage) throws Exception{
     window = primaryStage;
     window.setTitle("Course Scheduling");
+    
     insertTimeTable();
+    
+    file_Reader(currentDirPath, schedule_Arr);
+    
+    course_code_Saver(schedule_Arr, course_Codes);
+    
+    period_course_code_Obtainer(period_Course_codes, schedule_Arr);
+    
     execute();
     
     
@@ -291,10 +295,11 @@ public class courseSchedulingGUI extends Application {
   }
   //__________________________________________________________________________________________
   //insert timetable file gui method
-  public void insertTimeTable() {
+  public void insertTimeTable() throws Exception{
       boolean fileGot = selectTimeTableFile.fileSelector();
       if (fileGot) {
-          selectFile();
+          String tablePath = selectFile();
+          file_Mover(tablePath, currentDirPath);
       }
       else {
           //closes program since it can't run properly without file selected 
