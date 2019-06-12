@@ -256,35 +256,26 @@ public class courseSchedulingGUI extends Application {
         }
     }
     
-     //Method that slots teachers into course codes and stores them in hashmaps
+      //Method that slots teachers into course codes and stores them in hashmaps
   public static void teacher_slotting(ArrayList<String> teacher_Names, ArrayList<HashMap<String, String>> teacher_and_course,
                                       HashMap<String, String[]> teacher_Qualifications, ArrayList<String[]> period_Cc) throws Exception{
     ArrayList<String> teacher_edit = new ArrayList<String>(); //Creates arraylist
     HashMap<String, String> course_and_teacher = new HashMap<String, String>(); //Temporary hashmap to store teacher and courses
-    boolean teacherFound = false; //boolean value to determine if teacher is found or not
     
     
     for (int m = 0; m < 4; m++){ //Loops through it 4 times to slot all 4 periods
-      System.out.println("m ============================================================================================================= " + m);
       for (int n = 0; n < teacher_Names.size(); n++){
         teacher_edit.add(teacher_Names.get(n)); //Creates a copy of the teacher names array
       }
       for (int i = 0; i < period_Cc.get(m).length; i++){ //Loops through all courses in a period
-        teacherFound = false; //Resets to false
-        System.out.println("i = " + i);
-        for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teachers
-          if (teacherFound == true){ //If teacher is already found, break out of loop
-            System.out.println("j = " + j);
-            teacher_edit.remove((j-1)); //Removes teacher as to prevent duplicates
-            System.out.println("Teacher Removed");
-            break;
-          }
+        outerloop : //Outerloop
+        for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teacher
           for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
             if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
-              System.out.println("k = " + k);
               course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
-              teacherFound = true; //Sets to true to indicate teacher was found
-              break;
+              teacher_edit.remove((j-1)); //Removes teacher as to prevent duplicates
+              System.out.println("Teacher Removed");
+              break outerloop; //Breaks out of outerloop
             }
           }
         }
@@ -299,6 +290,7 @@ public class courseSchedulingGUI extends Application {
     //Method that stores teacher and the courses they're teaching into an array
     public static void teacher_course_Storer(ArrayList<HashMap<String, String>> teacher_and_course, ArrayList<String> teacher_Names, ArrayList<String[]> teacher_Courses){
         ArrayList<String> tempoutputstorer = new ArrayList<String>();
+        teacher_Courses.clear(); //Clears to ensure arraylist is empty
         for (int i = 0; i < teacher_Names.size(); i++){
             String teacher_name = teacher_Names.get(i); //Stores teacher name into a string variable
             tempoutputstorer.add(teacher_name); //Stores teacher name into arraylist
@@ -615,22 +607,7 @@ public class courseSchedulingGUI extends Application {
         
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+  
     
     
     
