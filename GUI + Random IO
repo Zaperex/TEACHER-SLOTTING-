@@ -273,7 +273,7 @@ public class courseSchedulingGUI extends Application {
           for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
             if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
               course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
-              teacher_edit.remove((j-1)); //Removes teacher as to prevent duplicates
+              teacher_edit.remove(j); //Removes teacher as to prevent duplicates
               System.out.println("Teacher Removed");
               break outerloop; //Breaks out of outerloop
             }
