@@ -29,14 +29,17 @@ public class selectTimeTableFile {
     //sets title
     window.setTitle("File Selector");
     
+    //creates VBox layout
     VBox box = new VBox(20);
+    //sets it to the center
+    box.setAlignment(Pos.CENTER);
     //button to select file
     Button initButton = new Button("Select File");
     //creates label
-    Label warningLabel = new Label("Please Select Time Table File");
+    Label warningLabel = new Label("Please select the time table file");
     
     //gets label and button and adds it to box
-    box.getChildren().addAll(initButton);
+    box.getChildren().addAll(warningLabel, initButton);
     
     //button action
     initButton.setOnAction(e -> {
@@ -44,7 +47,7 @@ public class selectTimeTableFile {
       window.close();
     });
     
-    Scene scene = new Scene(box, 300, 200);
+    Scene scene = new Scene(box, 300, 100);
     window.setScene(scene);
     //waits for user input 
     window.showAndWait();
