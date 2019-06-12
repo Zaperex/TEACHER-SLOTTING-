@@ -21,7 +21,7 @@ import java.io.*;
 import javafx.scene.shape.Rectangle;
 import javafx.collections.*;
 
-
+//class name, extends Application to support JavaFX
 public class courseSchedulingGUI extends Application {
     //Public Variable Declarations
     static ArrayList<String> teacher_Name = new ArrayList<String>(); //Arraylist to temporarily store teacher names
@@ -38,21 +38,29 @@ public class courseSchedulingGUI extends Application {
     static ArrayList<HashMap<String, String>> teacher_and_courses = new ArrayList<HashMap<String, String>>(); //Arraylist that stores the hashmap that stores the teachers for each period's courses
     
     //Global GUI Variables
+    //I used observable lists because there are more useful methods you can use with them in correspondence with JavaFX, otherwise it's just like an ArrayList
+    //list that stores CheckBoxes for teacher Qualifications
     ObservableList <CheckBox> qualificationsArr = FXCollections.observableArrayList();
+    //list that stores CheckBoxes for teacher restrictions
     ObservableList <CheckBox> restrictionsArr = FXCollections.observableArrayList();
+    //list that stores Teacher objects (used for the table)
     ObservableList <Teacher> teacherArr = FXCollections.observableArrayList();
+    //creates a Stage
     Stage window;
+    //declares buttons
     Button saveButton;
     Button cancelButton;
     Button tableBackButton;
+    //declares textfield
     TextField teacherNameInput;
+    //declares table
     TableView<Teacher> table;
-    
+    //___________________________________________________________________________________________________
     //Method that moves a file
     public static void file_Mover(String filePath, String path) throws IOException{
         Path filemove = Files.move(Paths.get(filePath), Paths.get(path + "\\Course_Schedule.csv")); //Moves the file
     }
-    
+    //_______________________________________________________________________________________________________
     //Method to read and store the content of a csv into an arraylist
     public static void file_Reader(String path, ArrayList<String[]> schedule_arr) throws IOException{
         File course_Scheduling = new File(currentDirPath + "\\Course_Schedule.csv"); //Finds csv
@@ -72,6 +80,7 @@ public class courseSchedulingGUI extends Application {
             filereader.close(); //Closes filereader
         }
     }
+    //____________________________________________________________________________________________________________
     //Method that stores all the course codes into an arraylist
     public static void course_code_Saver(ArrayList<String[]> schedule_arr, ArrayList<String> course_code_arr) throws IOException{
         for (int i = 0; i < schedule_arr.size(); i++){
@@ -87,7 +96,7 @@ public class courseSchedulingGUI extends Application {
         }
     }
     
-    
+    //_____________________________________________________________________________________________________________
     //Method that stores teacher quals into a file
     public static void file_Save(String[] teacher_qual, String teacher_names, String path) throws IOException{
         File teacher_qualifications = new File(path + "\\Teacher_Qualifications.csv");
@@ -108,7 +117,7 @@ public class courseSchedulingGUI extends Application {
             writer.close(); //Closes writer
         }
     }
-    
+    //____________________________________________________________________________________________________________________
     //Method that stores teacher restrictions into a file
     public static void restrict_file_Save(Boolean[] teacher_res, String teacher_names, String path) throws IOException{
         File teacher_restrictions = new File(path + "\\Teacher_Restrictions.csv");
@@ -129,7 +138,7 @@ public class courseSchedulingGUI extends Application {
             writer.close(); //Closes writer
         }
     }
-    
+    //_____________________________________________________________________________________________________________________
     //Method that obtains the course codes for each period
     public static void period_course_code_Obtainer(ArrayList<String[]> period_Ccodes, ArrayList<String[]> schedule_arr){
         ArrayList<String> temp_Code_storer = new ArrayList<String>(); //ArrayList that temporarily stores the courses of a period
@@ -197,7 +206,7 @@ public class courseSchedulingGUI extends Application {
         temp_Code_storer.clear(); //Clears arraylist for future sessions
     }
     
-    
+    //____________________________________________________________________________________________________________________
     //Reads created teacher_qualifications file and stores the contents into a hashmap
     public static void hashMap_Storer(String path, HashMap<String, String[]>teacher_Hashmap, ArrayList<String> teacher_Names) throws IOException{
         File course_Scheduling = new File(currentDirPath + "\\Teacher_Qualifications.csv"); //Finds csv
@@ -227,6 +236,7 @@ public class courseSchedulingGUI extends Application {
             filereader.close(); //Closes filereader
         }
     }
+    //______________________________________________________________________________________________________________________
     //Method that reads the items in the restrictions file and stores it in a hashmap
     public static void restrict_hashMap_Storer(String path, HashMap<String, Boolean[]>teacher_res_Hashmap, ArrayList<String> teacher_Names) throws IOException{
         File course_Scheduling = new File(currentDirPath + "\\Teacher_Restrictions.csv"); //Finds csv
@@ -255,38 +265,39 @@ public class courseSchedulingGUI extends Application {
             filereader.close(); //Closes filereader
         }
     }
-    
-      //Method that slots teachers into course codes and stores them in hashmaps
-  public static void teacher_slotting(ArrayList<String> teacher_Names, ArrayList<HashMap<String, String>> teacher_and_course,
-                                      HashMap<String, String[]> teacher_Qualifications, ArrayList<String[]> period_Cc) throws Exception{
-    ArrayList<String> teacher_edit = new ArrayList<String>(); //Creates arraylist
-    HashMap<String, String> course_and_teacher = new HashMap<String, String>(); //Temporary hashmap to store teacher and courses
-    
-    
-    for (int m = 0; m < 4; m++){ //Loops through it 4 times to slot all 4 periods
-      for (int n = 0; n < teacher_Names.size(); n++){
-        teacher_edit.add(teacher_Names.get(n)); //Creates a copy of the teacher names array
-      }
-      for (int i = 0; i < period_Cc.get(m).length; i++){ //Loops through all courses in a period
-        outerloop : //Outerloop
-        for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teacher
-          for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
-            if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
-              course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
-              teacher_edit.remove(j); //Removes teacher as to prevent duplicates
-              System.out.println("Teacher Removed");
-              break outerloop; //Breaks out of outerloop
+    //_______________________________________________________________________________________________________________________
+    //Method that slots teachers into course codes and stores them in hashmaps
+    public static void teacher_slotting(ArrayList<String> teacher_Names, ArrayList<HashMap<String, String>> teacher_and_course,
+                                        HashMap<String, String[]> teacher_Qualifications, ArrayList<String[]> period_Cc) throws Exception{
+        ArrayList<String> teacher_edit = new ArrayList<String>(); //Creates arraylist
+        HashMap<String, String> course_and_teacher = new HashMap<String, String>(); //Temporary hashmap to store teacher and courses
+        
+        
+        for (int m = 0; m < 4; m++){ //Loops through it 4 times to slot all 4 periods
+            for (int n = 0; n < teacher_Names.size(); n++){
+                teacher_edit.add(teacher_Names.get(n)); //Creates a copy of the teacher names array
             }
-          }
+            for (int i = 0; i < period_Cc.get(m).length; i++){ //Loops through all courses in a period
+                outerloop : //Outerloop
+                    for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teacher
+                    for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
+                        if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
+                            course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
+                            teacher_edit.remove(j); //Removes teacher as to prevent duplicates
+                            System.out.println("Teacher Removed");
+                            break outerloop; //Breaks out of outerloop
+                        }
+                    }
+                }
+            }
+            teacher_and_course.add(course_and_teacher); //Adds period Hashmap into arraylist
+            teacher_edit.clear(); //Clears to make sure array is empty for next session
         }
-      }
-      teacher_and_course.add(course_and_teacher); //Adds period Hashmap into arraylist
-      teacher_edit.clear(); //Clears to make sure array is empty for next session
+        
+        
+        
     }
-    
-    
-    
-  }
+    //_____________________________________________________________________________________________________________________
     //Method that stores teacher and the courses they're teaching into an array
     public static void teacher_course_Storer(ArrayList<HashMap<String, String>> teacher_and_course, ArrayList<String> teacher_Names, ArrayList<String[]> teacher_Courses){
         ArrayList<String> tempoutputstorer = new ArrayList<String>();
@@ -322,81 +333,105 @@ public class courseSchedulingGUI extends Application {
         }
     }
     //___________________________________________________________________________________________________________
+    //main method
     public static void main(String[] args) throws Exception{
+        //starts up GUI
         launch(args);
     }
     
     
     //GUI METHODS 
     //_____________________________________________________________________________________________________________-
+    //main GUI method
     public void start(Stage primaryStage) throws Exception{
+        //sets window as primaryStage
         window = primaryStage;
+        //sets the title to Course Scheduling
         window.setTitle("Course Scheduling");
-        
+        //calls method that will ask user to select time table file that has the schedule for the courses
         insertTimeTable();
-        
+        //calls method
         file_Reader(currentDirPath, schedule_Arr);
-        
+        //calls method
         course_code_Saver(schedule_Arr, course_Codes);
-        
+        //calls method
         period_course_code_Obtainer(period_Course_codes, schedule_Arr);
-        
+        //calls GUI method that will give the user the option of selecting either add a teacher or to view the timetable
         execute();
         
-        
     }
-    
+    //_________________________________________________________________________________________________________________
+    //method that opens window for user to create teacher or view time table, see BeginClass 
     public void execute() throws IOException{
-        
+        //integer that is gotten depending on what the user presses
         int response = BeginClass.startProgramWindow();
+        // if their response was add teacher, then call createQualifications method
         if (response == 2) {
             createQualifications();
         }
+        //if it was to view Time table then call create Time Table method
         else if (response == 1) {
             createTimeTable();
         }
+        //if they pressed x then the program was closed
         else if (response == 0) {
-            Platform.exit();
+            //exits program
+            System.exit(0);
         }
     }
-    //__________________________________________________________________________________________
+    //______________________________________________________________________________________________________
     //insert timetable file gui method
     public void insertTimeTable() throws Exception{
+        //checks if user pressed the button to select a file
         boolean fileGot = selectTimeTableFile.fileSelector();
         if (fileGot) {
+            //saves the path of the file and calls file_Mover method
             String tablePath = selectFile();
             file_Mover(tablePath, currentDirPath);
         }
+        //otherwise shuts down the program
         else {
             //closes program since it can't run properly without file selected 
             System.out.println("You closed me :(");
+            //exits program
             System.exit(0);
         }
         
     }
-    
+    //______________________________________________________________________________________________________
+    //method that creates the add teacher scene
     public void createQualifications() throws IOException{
         //clears if used multiple times in a session
         
         qualificationsArr.clear();
         restrictionsArr.clear();
         
+        //creates a borderPane layout
         BorderPane bp = new BorderPane();
+        //creates 2 VBox layouts (vertically stacked)
         VBox box1 = new VBox(10);
         VBox box2 = new VBox(10);
         
+        //creates labels for user friendlyness and guidance
         Label restrictionsLabel = new Label("Check restrictions that apply:");
         Label titleLabel = new Label("Check qualifications that apply:");
         Label nameLabel = new Label("Enter full name of instructor:");
+        //creates input where teacher enters their name
         teacherNameInput = new TextField();
+        //saves user inputs into a text/csv file
         saveButton = new Button("Finish");
+        //cancels creating a teacher and does not save inputs 
         cancelButton = new Button("Cancel");
         
+        //sets prompt text for users
         teacherNameInput.setPromptText("Firstname Lastname");
+        //sets spacing between window borders
         titleLabel.setPadding(new Insets(10, 10, 10, 10));
+        //sets spacing between window borders
         nameLabel.setPadding(new Insets(50, 0, 0, 0));
         
-        
+        //creates check boxes 
+        //these are restrictions (currently not in use)
         CheckBox p1Box = new CheckBox("No Period 1");
         restrictionsArr.add(p1Box);
         CheckBox p2Box = new CheckBox("No Period 2");
@@ -406,56 +441,84 @@ public class courseSchedulingGUI extends Application {
         CheckBox p5Box = new CheckBox("No Period 5");
         restrictionsArr.add(p5Box);
         
-        
+        //gets box 2 which is the restrictions box and adds the restrictions checkboxes along with the labels and the name input textfield and buttons
         box2.getChildren().addAll(restrictionsLabel, p1Box, p2Box, p4Box, p5Box, nameLabel, teacherNameInput, saveButton, cancelButton);
+        //sets the minimum width of the layout so the other one doesn't overtake it 
         box2.setMinWidth(200);
         
+        //sets spacing between window border
         box1.setPadding(new Insets(20, 20, 20, 20));
+        //sets spacing between window border
         box2.setPadding(new Insets(0, 20, 20, 20));
         
+        //creates a ScrollPane which is an object you can put long lists of items into a be able to scroll
         ScrollPane scroller = new ScrollPane();
+        //sets preferred size (PC will try to accomodate)
         scroller.setPrefSize(60, 120);
         
+        //loops through the course codes csv/text file and gets all of the courses and displays them as check boxes which the teachers will check if they are qualified for it
         for (int i = 0; i < course_Codes.size(); i++) {
+            //adds the newly created CheckBox object to the obersvable list so we can extract inputs later 
             qualificationsArr.add(new CheckBox(course_Codes.get(i)));
+            //adds the checkbox to the box1 layout 
             box1.getChildren().addAll(qualificationsArr.get(i));
             
         }
-        
+        //sets the content of the scroller to be box1 (qualifications)
         scroller.setContent(box1);
+        //sets the scroller to be the center position of the BorderPane
         bp.setCenter(scroller);
+        //sets box2 (restrictions) to be the right portion of the BorderPane
         bp.setRight(box2);
+        //sets the label to be the top portion of the BorderPane
         bp.setTop(titleLabel);
+        //sets spacing between window border
         bp.setPadding(new Insets(10, 10, 10, 10));
         
-        
+        // sets the title of the window
         window.setTitle("Course Scheduler");
+        //sets the action for the save button
         saveButton.setOnAction(e -> {
+            //try catch since IO is involved
             try {
+                //calls the method that collects data from the user inputs
                 retrieveCheckBoxes();
             }
             catch(IOException e2) {
+                // error message
                 System.out.println("Retreiving checkBox error");
             }
         });
+        // sets the action for the cancel button
         cancelButton.setOnAction(e -> {
+            //try and catch since IO is involved
             try {
+                //calls method to back out of add teacher page
                 cancelQual();
             }
             catch (IOException e3) {
+                //error message
                 System.out.println("Cancel teacher error");
             }
         });
         
+        //creates Scene and adds borderpane layout as main layout and sets the dimensions
         Scene qualScene = new Scene(bp, 500, 450);
+        //sets the current scene to qualScene
         window.setScene(qualScene);
+        //displays the window
         window.show();
     }
+    //_____________________________________________________________________________________________________________
+    //method that gets input from user during teacher creation
     public void retrieveCheckBoxes() throws IOException{
         
         teacher_Name.add(teacherNameInput.getText()); //Adds teacher name into the teacher name arraylist
+        //loops through the qualifications obervable list 
         for (int i = 0; i < qualificationsArr.size(); i++) {
+            // if the CheckBox is selected, then get the text and put it inside an arrayList
             if (qualificationsArr.get(i).isSelected()) {
+                // print message for testing 
                 System.out.println(qualificationsArr.get(i).getText());
                 teacher_Quals.add(qualificationsArr.get(i).getText()); //Adds the qualifications into the teacher quals arraylist
                 
@@ -463,6 +526,7 @@ public class courseSchedulingGUI extends Application {
         }
         //Creates an array that stores the values of the arraylist for teacher qualifications
         String[] teacher_Qualifications = new String[teacher_Quals.size()];
+        //loop to convert array into array list
         for (int i = 0; i < teacher_Quals.size(); i++){
             teacher_Qualifications[i] = teacher_Quals.get(i);
         }
@@ -471,16 +535,18 @@ public class courseSchedulingGUI extends Application {
         teacher_names_and_quals.put(teacherNameInput.getText(), teacher_Qualifications);
         
         
-        
+        // loop that checks if the restrictions checkboxes are selected and if they are adds true to the arrayList
         for (int i = 0; i < restrictionsArr.size(); i++) {
             if (restrictionsArr.get(i).isSelected()) {
                 //returns true 
                 System.out.println(restrictionsArr.get(i).isSelected());
                 teacher_Res.add(restrictionsArr.get(i).isSelected()); //Adds boolean value into arraylist
             }
+            //otherwise adds false
             else {
                 teacher_Res.add(false); //Adds false valule if not selected
                 //set index as false in boolean arraylist 
+                //prints false for testing purposes
                 System.out.println("false");
             }
         }
@@ -493,124 +559,169 @@ public class courseSchedulingGUI extends Application {
         restrict_file_Save(teacher_Restrictions, teacherNameInput.getText(), currentDirPath);
         
         teacher_Res.clear(); //Clears arraylists for next session
-        
+        //closes the window
         window.close();
+        //launches the original window with options to create a teacher or view timetable again
         execute();
     }
     
-    
-    
+    //_________________________________________________________________________________________________________________
     public void cancelQual() throws IOException{
+        //closes window
         window.close();
+        //launches execute method which opens window with options to create a teacher or to view the timetable
         execute();
     }
     //Time table creation
     //__________________________________________________________________________________________________________
     public void createTimeTable() throws IOException{
+        //calls hashMap storer method (currently not used properly)
         hashMap_Storer(currentDirPath, teacher_names_and_quals, teacher_Name);
+        // currently not used properly as well
         restrict_hashMap_Storer(currentDirPath, teacher_names_and_res, teacher_Name);
         //first
-        try{
-            teacher_slotting(teacher_Name, teacher_and_courses, teacher_names_and_quals, period_Course_codes);
-        }
-        catch(Exception e){
-            System.out.println("An exception has occured");
-        }
-        //second
-        teacher_course_Storer(teacher_and_courses, teacher_Name, all_teacher_courses);
-        
+        //the following methods are commented out because they are buggy and have probelms with indexing out of bounds and the like
+        /*
+         try{
+         teacher_slotting(teacher_Name, teacher_and_courses, teacher_names_and_quals, period_Course_codes);
+         }
+         catch(Exception e){
+         System.out.println("An exception has occured");
+         }
+         //second
+         teacher_course_Storer(teacher_and_courses, teacher_Name, all_teacher_courses);
+         */
+        //creates a table 
         table = new TableView<>();
         
+        //creates a button that brings you back 
         tableBackButton = new Button("Back");
+        //creates VBox
         VBox tableLayout = new VBox(5);
+        //sets spacing from window border
         tableLayout.setPadding(new Insets(10, 10, 10, 10));
+        //creates HBox
         HBox bottomBox = new HBox(20);
+        //sets spacing from window border
         bottomBox.setPadding(new Insets(10, 10, 5, 10));
+        //sets tableLayout into the cente rof the page
         tableLayout.setAlignment(Pos.CENTER);
         
+        //these are table coloumns and are literally the coloumns for the table
+        //there are 5 of them since 1 for the name and 4 for each period
+        //name coloumn
         TableColumn<Teacher, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setMinWidth(70);
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("teacherName"));
-        
+        //p1 coloumn
         TableColumn<Teacher, String> p1Column = new TableColumn<>("Period 1");
         p1Column.setMinWidth(70);
         p1Column.setCellValueFactory(new PropertyValueFactory<>("period1"));
-        
+        //p2 coloumn
         TableColumn<Teacher, String> p2Column = new TableColumn<>("Period 2");
         p2Column.setMinWidth(70);
         p2Column.setCellValueFactory(new PropertyValueFactory<>("period2"));
-        
+        //p4 column
         TableColumn<Teacher, String> p4Column = new TableColumn<>("Period 4");
         p4Column.setMinWidth(70);
         p4Column.setCellValueFactory(new PropertyValueFactory<>("period4"));
-        
+        //p5 column
         TableColumn<Teacher, String> p5Column = new TableColumn<>("Period 5");
         p5Column.setMinWidth(70);
         p5Column.setCellValueFactory(new PropertyValueFactory<>("period5"));
         
+        //sets the items of the table to return value of the getTeacher method
         table.setItems(getTeacher());
         
+        //adds the coloumns to the table
+        //also gives random warning 
         table.getColumns().addAll(nameColumn, p1Column, p2Column, p4Column, p5Column);
+        
         //makes sure all of the space is distributed amongst all columns instead of creating an extra one
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         
+        //adds the button to the bottom box layout
         bottomBox.getChildren().addAll(tableBackButton);
+        //adds the table and the bottombox to this layout
         tableLayout.getChildren().addAll(table, bottomBox);
         
+        //sets the action for the back button
         tableBackButton.setOnAction(e -> {
             table.getItems().clear();
             window.close();
+            //try catch since IO is involved
             try {
+                //calls execute method
                 execute();
             }
             catch (IOException e2) {
+                //error message
                 System.out.println("Back button error");
             }
         });
         
-        
+        //creates a Scene with tableLayout as main layout and dimensions 750 x 500
         Scene tableScene = new Scene(tableLayout, 750, 500);
+        //sets the current Scene to tableScene
         window.setScene(tableScene);
+        //sets the window to display
         window.show();
     }
-    
+    //_______________________________________________________________________________________________________________
+    //method that creates list for time table
     public ObservableList<Teacher> getTeacher() {
         //ObservableList that was declared as a global variable
-        String h = " ";
-        for (int i = 0; i < all_teacher_courses.size(); i++) {
-           // teacherArr.add(new Teacher(all_teacher_courses.get(i)[0], all_teacher_courses.get(i)[1],
-                                    //   all_teacher_courses.get(i)[2], all_teacher_courses.get(i)[3], all_teacher_courses.get(i)[4]));
-            System.out.println(all_teacher_courses.get(i)[0] + h + all_teacher_courses.get(i)[1] + h
-                                 + all_teacher_courses.get(i)[2] + h + all_teacher_courses.get(i)[3] + 
-                               h + all_teacher_courses.get(i)[4]);
+        
+        //loops through created array list and sets values into observable list which will be put into the table (currently doesn't work due to errors relating to array indexes)
+        //first value is teacher name, then p1 course, p2 , p4 , p5
+        
+        /*
+         for (int i = 0; i < all_teacher_courses.size(); i++) {
+         teacherArr.add(new Teacher(all_teacher_courses.get(i)[0], all_teacher_courses.get(i)[1],
+         all_teacher_courses.get(i)[2], all_teacher_courses.get(i)[3], all_teacher_courses.get(i)[4]));
+         
+         }
+         */
+        //just a template to display how the table works
+        //loops to create 100 teacher objects and adds them to the obersvable list
+        //whatever is in the obersvable list, is added to the table
+        for (int i = 0; i < 100; i++) {
+            teacherArr.add(new Teacher("Wilfred Ho", "ENG3U1", "MPM2D1", "SNC1D1", "SNC2D1"));
         }
-        
-        
+        //returns the observable list 
         return teacherArr;
     }
-    
+    //_________________________________________________________________________________________________________________
+    //select file method that opens a file chooser window and asks for 
     public String selectFile() {
+        //String for pathway of file
         String timeTablePathway;
+        //file chooser window
         FileChooser fileChooser = new FileChooser();
+        //sets title
         fileChooser.setTitle("Time Table CSV");
+        //sets file variable and opens it
         File file = fileChooser.showOpenDialog(window);
+        //if file exists then gets the file pathway
         if (file != null) {
             timeTablePathway = file.toString();        
         }
+        //if not the file pathway is null
         else {
             timeTablePathway = null;
         }
-        
+        //prints pathway for testing purposes
         System.out.println(timeTablePathway);
         
+        //returns the string that has the file pathway
         return timeTablePathway;
         
     }
     
-  
     
     
     
+    //END
 }
 
 
