@@ -510,6 +510,10 @@ public class courseSchedulingGUI extends Application {
   public void createTimeTable() throws IOException{
     hashMap_Storer(currentDirPath, teacher_names_and_quals, teacher_Name);
     restrict_hashMap_Storer(currentDirPath, teacher_names_and_res, teacher_Name);
+    //first
+    teacher_slotting(teacher_Name, teacher_and_courses, teacher_names_and_quals, period_Course_codes);
+    //second
+    teacher_course_Storer(teacher_and_courses, teacher_Name, all_teacher_courses);
     
     table = new TableView<>();
     
