@@ -270,6 +270,7 @@ public class courseSchedulingGUI extends Application {
   public void start(Stage primaryStage) throws Exception{
     window = primaryStage;
     window.setTitle("Course Scheduling");
+    insertTimeTable();
     execute();
     
     
@@ -287,6 +288,18 @@ public class courseSchedulingGUI extends Application {
     else if (response == 0) {
       Platform.exit();
     }
+  }
+  //__________________________________________________________________________________________
+  //insert timetable file gui method
+  public void insertTimeTable() {
+      boolean fileGot = selectTimeTableFile.fileSelector();
+      if (fileGot) {
+          selectFile();
+      }
+      else {
+          System.out.println("You closed me :(");
+      }
+      
   }
   
   public void createQualifications() throws IOException{
