@@ -258,7 +258,7 @@ public class courseSchedulingGUI extends Application {
   
     //Method that slots teachers into course codes and stores them in hashmaps
   public static void teacher_slotting(ArrayList<String> teacher_Names, ArrayList<HashMap<String, String>> teacher_and_course,
-                                      HashMap<String, String[]> teacher_Qualifications, ArrayList<String[]> period_Cc) throws IOException{
+                                      HashMap<String, String[]> teacher_Qualifications, ArrayList<String[]> period_Cc) throws Exception{
     ArrayList<String> teacher_edit = new ArrayList<String>(); //Creates arraylist
     HashMap<String, String> course_and_teacher = new HashMap<String, String>(); //Temporary hashmap to store teacher and courses
     boolean teacherFound = false; //boolean value to determine if teacher is found or not
@@ -269,15 +269,18 @@ public class courseSchedulingGUI extends Application {
     for (int m = 0; m < 4; m++){ //Loops through it 4 times to slot all 4 periods
       for (int i = 0; i < period_Cc.get(m).length; i++){ //Loops through all courses in a period
         teacherFound = false; //Resets to false
+       
         for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teachers
           if (teacherFound == true){ //If teacher is already found, break out of loop
+            teacher_edit.remove((j-1)); //Removes teacher as to prevent duplicates
+            System.out.println("Teacher Removed");
             break;
           }
           for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
             if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
               course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
               teacherFound = true; //Sets to true to indicate teacher was found
-              teacher_edit.remove(j); //Removes teacher as to prevent duplicates
+              break;
             }
           }
         }
@@ -511,7 +514,12 @@ public class courseSchedulingGUI extends Application {
     hashMap_Storer(currentDirPath, teacher_names_and_quals, teacher_Name);
     restrict_hashMap_Storer(currentDirPath, teacher_names_and_res, teacher_Name);
     //first
+    try{
     teacher_slotting(teacher_Name, teacher_and_courses, teacher_names_and_quals, period_Course_codes);
+    }
+    catch(Exception e){
+      System.out.println("An exception has occured");
+    }
     //second
     teacher_course_Storer(teacher_and_courses, teacher_Name, all_teacher_courses);
     
