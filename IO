@@ -14,6 +14,8 @@ class teacher_Slotting_IO{
   static ArrayList<String[]> period_Course_codes = new ArrayList<String[]>(); //ArrayList that course codes for each period
   
   static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
+  static HashMap<String, Boolean[]> teacher_names_and_res = new HashMap<String, Boolean[]>(); //Hashmap to store teacher names and restrictions
+  static ArrayList<HashMap<String, String>> teacher_and_courses = new ArrayList<HashMap<String, String>>(); //Arraylist that stores the hashmap that stores the teachers for each period's courses
   
   //Method that moves a file
   public static void file_Mover(String filePath, String path) throws IOException{
@@ -214,24 +216,58 @@ class teacher_Slotting_IO{
         temp_teacher_res.clear(); //Clears the arraylist
       }
     }
-      catch(IOException e){
-        System.out.println("IOExcpetion has occured");
-      }
-      finally{
-        filereader.close(); //Closes filereader
-      }
+    catch(IOException e){
+      System.out.println("IOExcpetion has occured");
     }
-  
-  public static void main(String[] args) throws IOException{
-    file_Reader(currentDirPath, schedule_Arr);
-    course_code_Saver(schedule_Arr, course_Codes);
-    period_course_code_Obtainer(period_Course_codes, schedule_Arr);
-    for (int i = 0; i < period_Course_codes.size(); i++){
-      System.out.println("Period " + (i + 1) + " Codes");
-      for (int j = 0; j < period_Course_codes.get(i).length; j++){
-        System.out.println(period_Course_codes.get(i)[j]);
-      }
+    finally{
+      filereader.close(); //Closes filereader
     }
   }
   
+  public static void teacher_slotting(ArrayList<String> teacher_Names, ArrayList<HashMap<String, String>> teacher_and_course,
+                                      HashMap<String, String[]> teacher_Quals, ArrayList<String[]> period_Cc) throws IOException{
+    ArrayList<String> teacher_edit = new ArrayList<String>(); //Creates arraylist
+    HashMap<String, String> course_and_teacher = new HashMap<String, String>(); //Temporary hashmap to store teacher and courses
+    boolean teacherFound = false; //boolean value to determine if teacher is found or not
+    for (int i = 0; i < teacher_Names.size(); i++){
+      teacher_edit.add(teacher_Names.get(i)); //Creates a copy of the teacher names array
+    }
+    
+    for (int m = 0; m < 4; m++){ //Loops through it 4 times to slot all 4 periods
+      for (int i = 0; i < period_Cc.get(m).length; i++){ //Loops through all courses in a period
+        teacherFound = false; //Resets to false
+        for (int j = 0; j < teacher_edit.size(); j++){ //Loops through all teachers
+          if (teacherFound == true){ //If teacher is already found, break out of loop
+            break;
+          }
+          for (int k = 0; k < teacher_Quals.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
+            if (teacher_Quals.get(teacher_edit.get(j))[k].contains(period_Cc.get(0)[i])){ //If teacher has the qualifications
+              course_and_teacher.put(period_Cc.get(0)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
+              teacherFound = true; //Sets to true to indicate teacher was found
+              teacher_edit.remove(j); //Removes teacher as to prevent duplicates
+            }
+          }
+        }
+      }
+      teacher_and_course.add(course_and_teacher); //Adds period Hashmap into arraylist
+      teacher_edit.clear(); //Clears to make sure array is empty for next session
+    }
+    
+    
+    
+  }
+
+
+public static void main(String[] args) throws IOException{
+  file_Reader(currentDirPath, schedule_Arr);
+  course_code_Saver(schedule_Arr, course_Codes);
+  period_course_code_Obtainer(period_Course_codes, schedule_Arr);
+  for (int i = 0; i < period_Course_codes.size(); i++){
+    System.out.println("Period " + (i + 1) + " Codes");
+    for (int j = 0; j < period_Course_codes.get(i).length; j++){
+      System.out.println(period_Course_codes.get(i)[j]);
+    }
+  }
+}
+
 }
