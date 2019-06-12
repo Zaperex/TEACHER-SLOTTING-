@@ -274,8 +274,8 @@ public class courseSchedulingGUI extends Application {
             break;
           }
           for (int k = 0; k < teacher_Qualifications.get(teacher_edit.get(j)).length; k++){ //Loops through and checks teacher qualifications
-            if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(0)[i])){ //If teacher has the qualifications
-              course_and_teacher.put(period_Cc.get(0)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
+            if (teacher_Qualifications.get(teacher_edit.get(j))[k].contains(period_Cc.get(m)[i])){ //If teacher has the qualifications
+              course_and_teacher.put(period_Cc.get(m)[i],teacher_edit.get(j)); //Adds teacher to hashmap as value with corresponding course code as key
               teacherFound = true; //Sets to true to indicate teacher was found
               teacher_edit.remove(j); //Removes teacher as to prevent duplicates
             }
