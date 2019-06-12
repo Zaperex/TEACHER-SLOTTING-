@@ -12,6 +12,7 @@ class teacher_Slotting_IO{
   static ArrayList<String[]> schedule_Arr = new ArrayList<String[]>(); //ArrayList that stores the items in the csv
   static ArrayList<String> course_Codes = new ArrayList<String>(); //Arraylist to store and create a list of all the course codes  
   static ArrayList<String[]> period_Course_codes = new ArrayList<String[]>(); //ArrayList that course codes for each period
+  static ArrayList<String[]> all_teacher_courses = new ArrayList<String[]>(); //ArrayList that stores the courses a teacher will teach
   
   static HashMap<String, String[]> teacher_names_and_quals = new HashMap<String, String[]>(); //Hashmap to store teacher names and quals
   static HashMap<String, Boolean[]> teacher_names_and_res = new HashMap<String, Boolean[]>(); //Hashmap to store teacher names and restrictions
@@ -260,9 +261,39 @@ class teacher_Slotting_IO{
   }
   
   //Method that stores teacher and the courses they're teaching into an array
-  public static void teacher_course_Storer(ArrayList<HashMap<String, String>> teacher_and_course, ArrayList<String> teacher_Names){
-    
+  public static void teacher_course_Storer(ArrayList<HashMap<String, String>> teacher_and_course, ArrayList<String> teacher_Names, ArrayList<String[]> teacher_Courses){
+    ArrayList<String> tempoutputstorer = new ArrayList<String>();
+    for (int i = 0; i < teacher_Names.size(); i++){
+      String teacher_name = teacher_Names.get(i); //Stores teacher name into a string variable
+      tempoutputstorer.add(teacher_name); //Stores teacher name into arraylist
+        
+      for (Map.Entry<String, String> map : teacher_and_course.get(0).entrySet()){ //Period 1 Course
+        if (map.getValue().equals(teacher_name)){ //If value is equal to teacher name then obtain the key
+          tempoutputstorer.add(map.getKey()); //Store key (course code) into arraylist
+        }
+      }
+      for (Map.Entry<String, String> map : teacher_and_course.get(1).entrySet()){ //Period 2 Course
+        if (map.getValue().equals(teacher_name)){ //If value is equal to teacher name then obtain the key
+          tempoutputstorer.add(map.getKey()); //Store key (course code) into arraylist
+        }
+      }
+      for (Map.Entry<String, String> map : teacher_and_course.get(2).entrySet()){ //Period 3 Course
+        if (map.getValue().equals(teacher_name)){ //If value is equal to teacher name then obtain the key
+          tempoutputstorer.add(map.getKey()); //Store key (course code) into arraylist
+        }
+      }
+      for (Map.Entry<String, String> map : teacher_and_course.get(3).entrySet()){ //Period 4 Course
+        if (map.getValue().equals(teacher_name)){ //If value is equal to teacher name then obtain the key
+          tempoutputstorer.add(map.getKey()); //Store key (course code) into arraylist
+        }
+      }
+      String[] teacher_courses = tempoutputstorer.toArray(new String[tempoutputstorer.size()]); //Converts to array
+      teacher_Courses.add(teacher_courses); //Adds teacher to arraylist
+      tempoutputstorer.clear(); //Clears arraylist for future sessions
+      
+    }
   }
+  
   
   public static void main(String[] args) throws IOException{
     file_Reader(currentDirPath, schedule_Arr);
