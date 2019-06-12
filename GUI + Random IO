@@ -297,7 +297,9 @@ public class courseSchedulingGUI extends Application {
           selectFile();
       }
       else {
+          //closes program since it can't run properly without file selected 
           System.out.println("You closed me :(");
+          System.exit(0);
       }
       
   }
